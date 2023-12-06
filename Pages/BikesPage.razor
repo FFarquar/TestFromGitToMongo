@@ -1,0 +1,56 @@
+﻿@page "/"
+@using TestFromGitToMongo.Services
+@inject IBikeServiceClient BSC
+@inject NavigationManager NM
+
+
+<h3>Bikes</h3>
+
+    @if(BSC.Bikes == null || BSC.Bikes.Count == 0)
+{
+    <span>Loading Bikes</span>
+}
+
+@foreach (var bike in BSC.Bikes)
+{
+
+    <div class="group" @onclick="() => BikeClicked(bike)">
+
+
+        <div class="media-body" >
+            <a href="#">
+                <h4 class="mb-0">@bike.Brand</h4>
+            </a>
+            <p>Model @bike.Model</p>
+            <p>Date purchased @bike.DatePurchased.ToString("dd/MM/yyyy")</p>
+            <h5 class="price">
+                $@bike.Cost
+            </h5>
+            <h6>Year model = @bike.Year </h6>
+            <h6>Warranty = @bike.WarrantyPeriodYears</h6>
+        </div>
+
+        <div class="oi-media-pause my-3">
+            <a>
+                <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />    
+            </a>
+        </div>
+    </div>
+}
+
+
+@code {
+    private static List<Bike> Bikes = new List<Bike>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await BSC.GetBikes();
+     
+
+    }
+
+    async Task BikeClicked(Bike bike)
+    {
+        NM.NavigateTo($"bike/{bike.Id}");
+    }
+}
