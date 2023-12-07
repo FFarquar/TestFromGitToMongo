@@ -18,6 +18,7 @@ namespace TestFromGitToMongo.Services.BikeService
         public BikeServiceClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(_baseUrl);
         }
 
         public List<Bike> Bikes { get; set; } = new List<Bike>();
@@ -26,12 +27,15 @@ namespace TestFromGitToMongo.Services.BikeService
         public async Task GetBike(int bikeId)
         {
 
+            //ConfigureHttpCLient();
 
+            var response = await _httpClient.GetFromJsonAsync<Bike[]>("bike/"+bikeId.ToString());
 
+            Bike = response.FirstOrDefault();
 
-            var result = await _httpClient.GetFromJsonAsync<ServiceResponse<Bike>>("api/bike/" + bikeId);
-            if (result != null && result.Data != null)
-                Bike = result.Data;
+            //var result = await _httpClient.GetFromJsonAsync<ServiceResponse<Bike>>("api/bike/" + bikeId);
+            //if (result != null && result.Data != null)
+            //    Bike = result.Data;
         }
 
         private void ConfigureHttpCLient()
@@ -42,7 +46,7 @@ namespace TestFromGitToMongo.Services.BikeService
         public async Task GetBikes()
         {
 
-            ConfigureHttpCLient();
+            //ConfigureHttpCLient();
 
             var response = await _httpClient.GetFromJsonAsync < Bike[]>(_bikesEndpoint);
             Bikes = response.ToList();

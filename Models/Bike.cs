@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace TestFromGitToMongo.Models
 {
-    [Table("MyCustomEntities")]
     public class Bike
     {
         
@@ -27,7 +26,7 @@ namespace TestFromGitToMongo.Models
         public string ImageURL { get; set; }
 
         [Required]
-        [Column("MappedCost", TypeName = "decimal(18,2)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Cost { get; set; }
         [Required]
         public string PurchasedFrom { get; set; }

@@ -1,0 +1,70 @@
+﻿@page "/bike/{bikeId}"
+@inject IBikeServiceClient BSC;
+@inject NavigationManager NM
+
+
+    @if(BSC.Bike == null)
+{
+        <span>Loading Bike</span>
+}
+
+        <div class="media-body" >
+            <a href="#">
+                <h4 class="mb-0">@BSC.Bike.Brand</h4>
+            </a>
+            <p>Model @BSC.Bike.Model</p>
+            <p>Date purchased @BSC.Bike.DatePurchased.ToString("dd/MM/yyyy")</p>
+            <h5 class="price">
+                $@BSC.Bike.Cost
+            </h5>
+            <h6>Year model = @BSC.Bike.Year </h6>
+            <h6>Warranty = @BSC.Bike.WarrantyPeriodYears</h6>
+        </div>
+
+        <div class="oi-media-pause my-3">
+            <a>
+                <img class="media-img img-fluid" src="@BSC.Bike.ImageURL" alt="@BSC.Bike.Model" width=20% />    
+            </a>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" @onclick="() => Trips()" class="btn btn-secondary fa fa-bicycle"> Trips</button>
+            <button type="button" @onclick="()=> Chains()" class="btn btn-secondary fa fa-link" > Chains</button>
+            <button type="button" @onclick="()=> Parts()" class="btn btn-secondary fa fa-cogs" > Parts</button>
+            <button type="button" @onclick="()=> Notes()" class="btn btn-secondary fa fa-sticky-note-o" > Notes</button>
+        </div>
+
+
+
+@code {
+    [Parameter]
+    public string BikeId { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await BSC.GetBike(int.Parse(BikeId));
+    }
+
+    async Task Trips()
+    {
+        NM.NavigateTo($"trips/{BSC.Bike.Id}");
+    }
+
+    async Task Chains()
+    {
+
+        NM.NavigateTo($"chainlist/{BSC.Bike.Id}");
+    }
+
+    async Task Parts()
+    {
+        NM.NavigateTo($"parts/{BSC.Bike.Id}");
+    }
+
+        async Task Notes()
+    {
+        NM.NavigateTo($"notes/{BSC.Bike.Id}");
+    }
+
+}
+
