@@ -14,7 +14,7 @@ namespace TestFromGitToMongo.Clients
         {
             _client = client;
             _browserStorageService = browserStorageService;
-            _client.BaseAddress = new Uri("http://localhost:3000/");
+            _client.BaseAddress = new Uri(Settings.API_BaseUrl);
             _client.Timeout = new TimeSpan(0, 0, 30);
             _client.DefaultRequestHeaders.Clear();
 
