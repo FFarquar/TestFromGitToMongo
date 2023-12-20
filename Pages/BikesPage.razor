@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using TestFromGitToMongo.Services
+@using TestFromGitToMongo.Services.httpServicExample
 @inject IBikeServiceClient BSC
+@*@inject IHttpClientServiceImplementation HttpCS*@
 @inject NavigationManager NM
 
 
@@ -44,9 +46,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await BSC.GetBikes();
-     
+        //await BSC.GetBikes();
+        //await HttpCS.GetBikes();
+        //await HttpCS.GetBikesWithStream();
+        //await HttpCS.Execute();         //Example directly using typed client
 
+        await BSC.GetBikes();
     }
 
     async Task BikeClicked(Bike bike)

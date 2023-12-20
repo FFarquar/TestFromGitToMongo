@@ -1,0 +1,34 @@
+﻿@page "/admin"
+@inject IAuthService AuthService
+
+<h3>ChangeToAdmin</h3>
+<EditForm Model ="user" OnValidSubmit="ChangeToAdminGo">
+
+
+    <button type="submit" class="btn btn-primary">Press to change user associated with token to admin</button>
+
+    <div class=@messagecssClass>
+        <span>@message</span>
+    </div>
+</EditForm>
+
+@code {
+    UserLogin user = new UserLogin(); 
+
+    string message = string.Empty;
+    string messagecssClass = string.Empty;
+
+    async Task ChangeToAdminGo()
+    {
+
+        var result = await AuthService.ChangeUserToAdmin();
+
+        
+        message = result.Message;
+        if (result.Success)
+            messagecssClass = "text-success";
+        else
+            messagecssClass = "text-danger";
+
+    }
+}

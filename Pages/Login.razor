@@ -1,0 +1,43 @@
+﻿@page "/login"
+@inject IAuthService AuthService
+
+<EditForm Model ="user" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator/>
+    <div class="mb-3">
+        <label for="userName">User name</label>
+        <InputText id="userName" @bind-Value="user.username" class="form-control" />
+        <ValidationMessage For="@(() => user.username)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="user.password" class="form-control" type="password" />
+        <ValidationMessage For="@(() => user.password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+
+    <div class=@messagecssClass>
+        <span>@message</span>
+    </div>
+</EditForm>
+
+@code {
+    UserLogin user = new UserLogin(); 
+
+    string message = string.Empty;
+    string messagecssClass = string.Empty;
+
+    async Task HandleLogin()
+    {
+        var result = await AuthService.Login(user);
+        //var result = await AuthService.TestCall(user);
+        
+        message = result.Message;
+        if (result.Success)
+            messagecssClass = "text-success";
+        else
+            messagecssClass = "text-danger";
+
+    }
+}

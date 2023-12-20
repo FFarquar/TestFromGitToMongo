@@ -8,17 +8,14 @@ using System.Text.Json;
 
 namespace TestFromGitToMongo.Services.BikeService
 {
+
     public class BikeServiceClient : IBikeServiceClient
     {
-        private readonly HttpClient _httpClient;
-        const string _baseUrl = "https://graceful-deer-fedora.cyclic.app/";
-        
-        const string _bikesEndpoint = "bikes";
+        private readonly BikeAPIClient _bikesClient;
 
-        public BikeServiceClient(HttpClient httpClient)
+        public BikeServiceClient(BikeAPIClient bikesClient)
         {
-            _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(_baseUrl);
+            _bikesClient = bikesClient;
         }
 
         public List<Bike> Bikes { get; set; } = new List<Bike>();
@@ -26,31 +23,12 @@ namespace TestFromGitToMongo.Services.BikeService
 
         public async Task GetBike(int bikeId)
         {
-
-            //ConfigureHttpCLient();
-
-            var response = await _httpClient.GetFromJsonAsync<Bike[]>("bike/"+bikeId.ToString());
-
-            Bike = response.FirstOrDefault();
-
-            //var result = await _httpClient.GetFromJsonAsync<ServiceResponse<Bike>>("api/bike/" + bikeId);
-            //if (result != null && result.Data != null)
-            //    Bike = result.Data;
-        }
-
-        private void ConfigureHttpCLient()
-        {
-            _httpClient.BaseAddress = new Uri(_baseUrl);
+            Bike = await _bikesClient.GetBike(bikeId);
         }
 
         public async Task GetBikes()
         {
-
-            //ConfigureHttpCLient();
-
-            var response = await _httpClient.GetFromJsonAsync < Bike[]>(_bikesEndpoint);
-            Bikes = response.ToList();
-
+            Bikes = await _bikesClient.GetBikes();
         }
     }
 }

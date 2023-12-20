@@ -1,0 +1,24 @@
+﻿This project is a bit of a mess. I got stuck on basically, how to add the auth token to the HTTP request. I ended up sticking the token in a header, 
+but this caused a lot of probs in how to register the service, as I needed to inject the local storage service to get details from the browser storage
+
+After a lot of playing around, came across a tutorial on how to use HTTP Client (and next HTTPFactory) for ASP pages. Seems to hold for Blazor.
+
+I've been through the first tutorial https://code-maze.com/fetching-data-with-httpclient-in-aspnetcore/ and have managed to modify
+IHttpClientServiceImplementation HttpClientServiceImplementation to call my bike api AND insert the auth token into the header
+
+THIS METHOD OF ADDING THE SERVICE DIDNT WORK WITH injecting other services into the HTPP client
+builder.Services.AddScoped( sp =>
+{
+    return new HttpClient(new AddHeadersDelegatingHandler())
+    {
+        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+};
+});
+
+I have to continue with the tutorial to read about factories so that I dont need HTTP Clients in each service. I also removed the BikeServiceClient, but it will need
+to be refactored so that it can be used. At the moment HttpClientCrudService is rigged up to getBikes from the API
+
+Have the source code for web tutorial in HttpTesting.sln
+
+Up to "Inspecting Status Codes from Responses" on  https://code-maze.com/canceling-http-requests-in-asp-net-core-with-cancellationtoken/ 
+
