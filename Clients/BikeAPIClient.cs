@@ -72,6 +72,19 @@ namespace TestFromGitToMongo.Clients
 
             }
         }
+
+        public async Task<List<ChainSummaryDTO>> GetChains(int bikeId)
+        {
+            using (var response = await _client.GetAsync("chains/" + bikeId, HttpCompletionOption.ResponseHeadersRead))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var Chains = await JsonSerializer.DeserializeAsync<List<ChainSummaryDTO>>(stream, _options);
+                return Chains;
+
+            }
+        }
     }
 
 }

@@ -5,6 +5,7 @@ global using TestFromGitToMongo.Services.httpclientServicExample;
 global using TestFromGitToMongo.Services.TripService;
 global using TestFromGitToMongo.Services.BrowserStorageService;
 global using TestFromGitToMongo.Models;
+global using TestFromGitToMongo.Services.ChainService;
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -16,8 +17,9 @@ using TestFromGitToMongo.Services;
 
 using TestFromGitToMongo.Data;
 using TestFromGitToMongo.Services.AuthService;
-using TestFromGitToMongo.Services.TripService;
-using TestFromGitToMongo.Clients;
+
+
+
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -31,6 +33,7 @@ builder.Services.AddScoped<IBikeServiceClient, BikeServiceClient >();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 builder.Services.AddScoped<ITripServiceClient, TripServiceClient>();
+builder.Services.AddScoped<IChainServiceClient, ChainServiceClient>();
 
 
 builder.Services.AddBlazoredLocalStorage();

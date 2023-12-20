@@ -1,0 +1,79 @@
+﻿@page "/chainlist/{bikeId:int}"
+
+@inject IChainServiceClient CSC
+@inject NavigationManager NM
+
+<h3>Chains</h3>
+
+<div class="btn-group" role="group" aria-label="Basic example">
+    <button type="button" @onclick="() => AddChain()" class="btn btn-secondary fa fa-link"> Add Chain</button>
+</div>
+
+@if(CSC.Chains == null)
+{
+    <span>Loading chains</span>
+}
+@if(CSC.Chains.Count == 0 )
+{
+    <span>No chains entered for this bike</span>
+}
+
+@foreach (var chain in CSC.Chains)
+{
+
+    <div class="group" @onclick="() => ChainClicked(chain)">
+
+
+        <div class="media-body" >
+            <a href="#">
+                <h4 class="mb-0">@chain.Model</h4>
+            </a>
+            <p>Chain letter @chain.ChainLetter</p>
+            <p>Date purchased @chain.DatePurchased.ToString("dd/MM/yyyy")</p>
+            <h5 class="price">
+                $@chain.Cost
+            </h5>
+            <h6>Trips taken = @chain.TripsTake </h6>
+            <h6>Km's travelled = @chain.DistanceTravelled</h6>
+        </div>
+
+        <div class="oi-media-pause my-3">
+            
+@*            <a href="#">
+                <img class="media-img img-fluid" src="@chain.ImageURL" alt="@chain.Model" width=20% />    
+            </a>
+*@            <a>
+                <img class="media-img img-fluid" src="@chain.ImageURL" alt="@chain.Model" width=20% />    
+            </a>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int BikeId { get; set; } = 0;
+    private static List<Chain> Chains = new List<Chain>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CSC.GetChains(BikeId);
+
+        //var result = await http.GetFromJsonAsync<List<Chain>>("api/Chain");
+
+        //if (result!= null)
+        //    Chains = result;
+    }
+
+    async Task ChainClicked(ChainSummaryDTO chain)
+    {
+        //NM.NavigateTo($"ChainRotations/{chain.Id}");
+        NM.NavigateTo($"ChainRotations/{chain.Id}/{BikeId}");
+    }
+
+    protected  async Task AddChain()
+    {
+        var returnURL = @NM.ToBaseRelativePath(NM.Uri);
+        NM.NavigateTo($"/addChain/{BikeId}?returnUrl={returnURL}");
+    }
+}
