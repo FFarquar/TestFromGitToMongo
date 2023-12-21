@@ -21,7 +21,18 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task<ServiceResponse<int>> AddTrip(Trip trip)
         {
-            throw new NotImplementedException();
+
+            trip = await _apiClient.AddTrip(trip);
+
+            if (trip != null)
+            {
+                return new ServiceResponse<int> { Message = "Trip added." };
+            }
+            else
+            {
+                return new ServiceResponse<int> { Success = false, Message = "Trip not added." };
+            }
+
             //var result = await _http.PostAsJsonAsync("api/trip/addTrip", trip);
 
             //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
