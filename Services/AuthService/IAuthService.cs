@@ -10,5 +10,6 @@ namespace TestFromGitToMongo.Services.AuthService
         Task<ServiceResponse<string>> Login(UserLogin request);
         Task<ServiceResponse<bool>> ChangePassword(UserChangePassword request);
         Task<ServiceResponse<bool>> ChangeUserToAdmin();   //a test method to see if can use example route on node
+        Task<ServiceResponse<bool>> TestAdminRoute();   //a test method to see if can use example route on node
     }
 }

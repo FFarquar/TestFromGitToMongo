@@ -1,4 +1,5 @@
-﻿@page "/counter"
+﻿@inject IAuthService AS
+@page "/counter"
 
 <PageTitle>Counter</PageTitle>
 
@@ -8,11 +9,25 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<button class="btn btn-primary" @onclick="TestAdminRoute">Test Admin route</button>
+<label>@TestAdminRouteResponse</label>
+
 @code {
     private int currentCount = 0;
+    private string TestAdminRouteResponse = string.Empty;
 
     private void IncrementCount()
     {
         currentCount++;
     }
+    private async void TestAdminRoute()
+    {
+        var response = new ServiceResponse<bool>();
+        response = await AS.TestAdminRoute();
+
+        TestAdminRouteResponse = response.Message;
+
+        StateHasChanged();
+    }
+
 }

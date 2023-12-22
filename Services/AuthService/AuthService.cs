@@ -141,6 +141,11 @@ namespace TestFromGitToMongo.Services.AuthService
             
 
         }
+
+        public Task<ServiceResponse<bool>> TestAdminRoute()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class RegLogDTO
