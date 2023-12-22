@@ -97,7 +97,7 @@
       "System.Linq.Expressions.dll": "sha256-8yV9TSxB\/ADP0gU2uJkFRcCG8JxS7kRUN45AiLFmw2c=",
       "System.Linq.Queryable.dll": "sha256-fm0+\/cLpRLzGMBvtlf4XSFrS9+wmFe6shIjs4IgBmbg=",
       "System.Memory.dll": "sha256-qoHJsPA23pu1qaVC6UDN5r34jfauj+\/JQuBHW1tfL74=",
-      "System.Net.Http.dll": "sha256-JU7BIIuWFRfXfzT\/SLV3WOD5NwYoG84YuogPlqYgUNc=",
+      "System.Net.Http.dll": "sha256-G+5wVDrZKYXF+5j3Dwp3fo\/CJcvQ2UvcgccdfjOrTIw=",
       "System.Net.Http.Json.dll": "sha256-F\/AFRfMH1zq\/9elGIXU6z9G913lcii+PJaT4TVQCF\/A=",
       "System.Net.NameResolution.dll": "sha256-UBYgDhbpsIuZter2yob+7VaVZzY4+S7VmWxgzzdGmUc=",
       "System.Net.NetworkInformation.dll": "sha256-z\/NcvaaBMtVm7hwCl3H17+SbW+QMKavo6fL5AGY6rrc=",
@@ -150,7 +150,7 @@
       "System.Xml.ReaderWriter.dll": "sha256-mPfjANOSreY3TzEXdJtyAQK5PqbYhXvqbKp00ZJSB18=",
       "System.Xml.XDocument.dll": "sha256-VQeEN601tUfxIz+yHNZTCh0UZAd3uJ3fLgzcwV7BOIM=",
       "System.Xml.XmlSerializer.dll": "sha256-yDflKompHkvfD23oWsC+3qswBEtv+vcfnD0L2eZgG9w=",
-      "TestFromGitToMongo.dll": "sha256-A0CA+GltisC2OEBQzTlPJlrPt5Ofv2UPnatCQRbm60k=",
+      "TestFromGitToMongo.dll": "sha256-4ieRWf3J\/FsMWezA5AYF6wVkkjFE+f3ITsVB9P8D4\/c=",
       "ZstdSharp.dll": "sha256-VKZX+de4WCoEsOirOWgSviiKvr0Z3Ujd2\/PpLOUPOaE="
     },
     "extensions": null,
