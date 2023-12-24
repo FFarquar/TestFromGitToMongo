@@ -52,6 +52,20 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
+        public async Task<TripDTO> GetTrip(string tripId)
+        {
+            using (var response = await _client.GetAsync("trips/getatrip/"+tripId, HttpCompletionOption.ResponseHeadersRead))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
+                Console.WriteLine("Date returned = " + Trip.Date.ToUniversalTime());
+                return Trip;
+
+            }
+        }
+
         public async Task<List<TripDTO>> GetTrips()
         {
             using (var response = await _client.GetAsync("trips/getalltrips", HttpCompletionOption.ResponseHeadersRead))
@@ -78,11 +92,47 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
+        public async Task<bool> DeleteTrip(string tripId)
+        {
+            using (var response = await _client.DeleteAsync("trips/deletetrip/" + tripId))
+            {
+               // response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    return true;
+                else
+                    return false;
+
+                //var deleteTrip = await JsonSerializer.DeserializeAsync< DeleteTripDTO > (stream, _options);
+
+                //if (deleteTrip != null)
+                //    return deleteTrip.deleted;
+                //else
+                //    return false;
+
+            }
+        }
+
         public async Task<Trip> AddTrip(Trip trip)
         {
             var jsonString = JsonSerializer.Serialize(trip);
             
             using (var response = await _client.PostAsync("trips/addtrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+                return tripRes;
+            }
+        }
+
+        public async Task<Trip> UpdateTrip(Trip trip)
+        {
+            var jsonString = JsonSerializer.Serialize(trip);
+
+            using (var response = await _client.PatchAsync("trips/updatetrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
             {
                 response.EnsureSuccessStatusCode();
                 var stream = await response.Content.ReadAsStreamAsync();
@@ -195,4 +245,5 @@ namespace TestFromGitToMongo.Clients
         public string user { get; set; }
         public string token { get; set; }
     }
+
 }

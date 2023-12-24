@@ -1,0 +1,133 @@
+﻿@page "/editdeletetrip/{tripId}"
+@page "/editdeletetrip/{tripId}/{bikeId:int}"
+@inject ITripServiceClient TSC
+@inject IChainServiceClient CSC
+@*@inject IJSRuntime JsRuntime*@
+@inject NavigationManager NavigationManager
+<h3>Edit Trip</h3>
+
+<EditForm Model="request">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="mb-3">
+        <label for="chainId">Chain Letter</label>
+        <InputSelect id="chainId" @bind-Value="request.ChainId" class="form-control">
+                @foreach(var chain in CSC.Chains)
+                {
+                    <option value="@chain.Id">@chain.ChainLetter</option>
+                }
+        </InputSelect> 
+
+        <ValidationMessage For="@(() => request.ChainId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="date">Date</label>
+        <InputDate id="date" @bind-Value="request.Date" class="form-control"/>
+        <ValidationMessage For="@(() => request.Date)" />
+
+    </div>
+
+    <div class="mb-3">
+        <label for="tripDistance">Trip Distance</label>
+        <InputNumber id="tripDistance" @bind-Value="request.TripDistance" class="form-control"/>
+        <ValidationMessage For="@(() => request.TripDistance)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="chainRotation">Chain Rotation</label>
+        <InputNumber id="chainRotation" @bind-Value="request.ChainRotation" class="form-control"/>
+        <ValidationMessage For="@(() => request.ChainRotation)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="tripDescription">Trip description</label>
+        <InputText id="tripDescription" @bind-Value="request.TripDescription" class="form-control"/>
+        <ValidationMessage For="@(() => request.TripDescription)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="tripNotes">Trip notes</label>
+        <InputText id="tripNotes" @bind-Value="request.TripNotes" class="form-control"/>
+        <ValidationMessage For="@(() => request.TripNotes)" />
+    </div>
+
+    <div>
+        <PopContainer ConfirmedChanged="DeleteTrip" />
+        <p/>
+        <button type="submit" @onclick="@(()=> UpdateTrip())"  class="btn btn-secondary">Update</button>
+        
+    </div>
+
+    @message
+</EditForm>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public  string tripId { get; set; } = string.Empty;
+    
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+  
+    string message = string.Empty;
+    private static List<Chain> Chains = new List<Chain>();
+    Trip request = new Trip();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await TSC.GetTripAsync(tripId);
+
+        if(request != null)
+        {
+            request.ChainId = TSC.TripDTO.ChainId;
+            request.Date = TSC.TripDTO.Date;
+            request.TripDistance = TSC.TripDTO.TripDistance;
+            request.ChainRotation = TSC.TripDTO.ChainRotation;
+            request.TripDescription = TSC.TripDTO.TripDescription;
+            request.TripNotes = TSC.TripDTO.TripNotes;
+            request.Id = TSC.TripDTO.Id;
+            request._id = TSC.TripDTO._id;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        request.Date = DateTime.Now;
+
+        await CSC.GetChains(bikeId);
+    }
+
+    private async Task UpdateTrip()
+    {
+        var result = await TSC.UpdateTrip(request);
+        message = result.Message;
+
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo(ReturnUrl);
+        }
+    }
+
+    private async Task DeleteTrip(bool deleteConfirmed)
+    {
+
+        if(deleteConfirmed == true)
+        {
+            var result = await TSC.DeleteTrip(request._id);
+            message = result.Message;
+
+            if (result.Success)
+            {
+                await CSC.GetChains(bikeId); 
+                NavigationManager.NavigateTo(ReturnUrl);
+            }            
+        }
+    }
+
+}

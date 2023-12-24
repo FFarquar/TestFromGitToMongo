@@ -10,6 +10,7 @@ namespace TestFromGitToMongo.Models
     public class TripDTO
     {
         public int Id { get; set; }
+        public string _id { get; set; }
         public string ChainLetter { get; set; }
         public int ChainId { get; set; }
         public DateTime Date { get; set; }

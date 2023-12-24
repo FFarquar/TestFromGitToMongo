@@ -10,7 +10,9 @@ namespace TestFromGitToMongo.Models
 {
     public class Trip
     {
-        public int Id { get; set; }
+        public int Id { get; set; }             //This ID was from SQL
+        public string _id { get; set; }     //This ID is from Mongo
+
         //public Chain Chain { get; set; }
         [Required]
         public int  ChainId { get; set; }

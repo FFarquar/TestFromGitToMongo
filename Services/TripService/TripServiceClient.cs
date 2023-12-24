@@ -38,9 +38,15 @@ namespace TestFromGitToMongo.Services.TripService
             //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }
 
-        public async Task<ServiceResponse<bool>> DeleteTrip(int tripId)
+        public async Task<ServiceResponse<bool>> DeleteTrip(string tripId)
         {
-            throw new NotImplementedException();
+            var result = await _apiClient.DeleteTrip(tripId);
+
+            if (result == true)
+                return new ServiceResponse<bool> { Message = "Deleted" };
+            else
+                return new ServiceResponse<bool> { Success = false ,Message = "Not deleted" };
+
             //var result = await _http.DeleteAsync("api/Trip/" + tripId);
 
             //return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
@@ -55,9 +61,11 @@ namespace TestFromGitToMongo.Services.TripService
             //    ChainRotationsTripsDTO = result.Data;
         }
 
-        public async Task  GetTripAsync(int tripId)
+        public async Task  GetTripAsync(string tripId)
         {
-            throw new NotImplementedException();
+
+            TripDTO = await _apiClient.GetTrip(tripId);
+
             //var result = await _http.GetFromJsonAsync<ServiceResponse<TripDTO>>("api/Trip/" + tripId);
 
             //if (result != null && result.Data != null)
@@ -84,7 +92,15 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task<ServiceResponse<int>> UpdateTrip(Trip trip)
         {
-            throw new NotImplementedException();
+            var result = await _apiClient.UpdateTrip(trip);
+
+            if(result != null)
+                return new ServiceResponse<int> { Message = "Updated"};
+            else
+            {
+                return new ServiceResponse<int> { Success = false, Message = "Not updated" };
+            }
+                
             //var result = await _http.PutAsJsonAsync("api/trip/updateTrip", trip);
 
             //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
