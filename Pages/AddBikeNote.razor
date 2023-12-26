@@ -1,0 +1,71 @@
+﻿@page "/addbikenote/{bikeId:int}"
+@*@using BikeChainUsage.Shared*@
+@inject INoteService BNS
+@inject IBikeServiceClient BSC
+@inject NavigationManager NM
+
+
+<h3>Add Bike Note</h3>
+
+<EditForm Model="request" OnValidSubmit="AddNewBikeNote">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+     <div class="mb-3">
+        <label for="date">Date</label>
+        <InputDate id="date" @bind-Value="request.Date" class="form-control"/>
+        <ValidationMessage For="@(() => request.Date)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="note">Note</label>
+        <InputText id="note" @bind-Value="request.Note" class="form-control"/>
+        <ValidationMessage For="@(() => request.Note)" />
+    </div>
+
+    <AddDeleteAttachments AddItemsToHost="AddItemsToFileList" ItemsToUpload=filesToUploadDTO modeUsingIn=AddDeleteAttachments.modeRunningIn.AddMode/>
+    <button type="submit" class="btn btn-primary">Apply</button>
+
+    @message
+</EditForm>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    BikeNote request = new BikeNote();
+    string message = string.Empty;
+
+
+
+    public List<FileUploadDTO> filesToUploadDTO = new List<FileUploadDTO>();
+
+    private async Task AddItemsToFileList(List<FileUploadDTO> files)
+    {
+
+        filesToUploadDTO = files;
+    }
+
+    private async Task AddNewBikeNote()
+    {
+
+        var result = await BNS.AddBikeNote(request,filesToUploadDTO);
+        message = result.Message;
+
+        if (result.Success)
+        {
+            NM.NavigateTo(ReturnUrl);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await BSC.GetBikes();
+
+        request.BikeId = bikeId;
+        request.Date = DateTime.Now;
+    }
+}

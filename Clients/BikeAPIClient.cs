@@ -237,6 +237,77 @@ namespace TestFromGitToMongo.Clients
 
         //TODO: Add the register route.
         //TODO: Add the delete trip. Make it only someone who has admin access can do it. Need to change the functions to return role from DB
+
+        public async Task<List<BikeNote>> GetListOfNotesForBike(int bikeid)
+        {
+            using (var response = await _client.GetAsync("notes/getnotesforabike/" + bikeid, HttpCompletionOption.ResponseHeadersRead))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var Notes = await JsonSerializer.DeserializeAsync<List<BikeNote>>(stream, _options);
+                return Notes;
+
+            }
+        }
+
+        public async Task<BikeNote> AddNote(BikeNote note)
+        {
+            var jsonString = JsonSerializer.Serialize(note);
+
+            using (var response = await _client.PostAsync("notes/addnote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+                return noteRes;
+            }
+        }
+
+        public async Task<BikeNote> GetBikeNote(string noteId)
+        {
+            using (var response = await _client.GetAsync("notes/getanote/" + noteId, HttpCompletionOption.ResponseHeadersRead))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var Note = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+                
+                return Note;
+
+            }
+        }
+
+        public async Task<bool> DeleteNote(string noteId)
+        {
+            using (var response = await _client.DeleteAsync("notes/deletenote/" + noteId))
+            {
+
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    return true;
+                else
+                    return false;
+
+            }
+        }
+
+        public async Task<BikeNote> UpdateNote(BikeNote note)
+        {
+            var jsonString = JsonSerializer.Serialize(note);
+
+            using (var response = await _client.PatchAsync("notes/updatenote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            {
+                response.EnsureSuccessStatusCode();
+                var stream = await response.Content.ReadAsStreamAsync();
+
+                var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+                return note;
+            }
+        }
+
     }
 
     public class RegLogDTO

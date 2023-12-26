@@ -1,0 +1,187 @@
+﻿@page "/editdeletebikenote/{bikeNoteId}/{bikeId:int}"
+@inject INoteService BNS
+@inject IBikeServiceClient BSC
+@inject NavigationManager NM
+@*@inject IUploadDownloadServiceClient UDSC*@
+
+<h3>Edit Bike Note</h3>
+
+<EditForm Model="request">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="mb-3">
+        <label for="bikeId">Bike</label>
+        <InputSelect id="bikeId" @bind-Value="request.BikeId" class="form-control">
+                @foreach(var bike in BSC.Bikes)
+                {
+                    <option value="@bike.Id">@bike.Year @bike.Model</option>
+                }
+        </InputSelect> 
+
+        <ValidationMessage For="@(() => request.BikeId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="date">Date</label>
+        <InputDate id="date" @bind-Value="request.Date" class="form-control"/>
+        <ValidationMessage For="@(() => request.Date)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="note">Note</label>
+        <InputText id="note" @bind-Value="request.Note" class="form-control"/>
+        <ValidationMessage For="@(() => request.Note)" />
+    </div>
+
+    <AddDeleteAttachments AddItemsToHost="AddItemsToFileList" ItemsToUpload=filesToUploadDTO modeUsingIn=AddDeleteAttachments.modeRunningIn.EditMode/>
+    <div>
+        <PopContainer ConfirmedChanged="DeleteBikeNote" />
+        <p/>
+        <button type="submit" @onclick="@(()=> UpdateBikeNote())"  class="btn btn-secondary">Update</button>
+        
+    </div>
+
+    @message
+</EditForm>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string returnUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public string bikeNoteId { get; set; } = string.Empty;
+
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    string message = string.Empty;
+    private static List<Bike> Bikes = new List<Bike>();
+    BikeNote request = new BikeNote();
+
+    public List<FileUploadDTO> filesToUploadDTO = new List<FileUploadDTO>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await BNS.GetBikeNote(bikeNoteId);
+
+        if(request != null)
+        {
+            request.Id = BNS.BikeNote.Id;
+            request.BikeId = BNS.BikeNote.BikeId;;
+            request.Date = BNS.BikeNote.Date;
+            request.Note = BNS.BikeNote.Note;
+            request._id= BNS.BikeNote._id;
+        }
+       //Console.WriteLine(BNS.BikeNote.Note);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        await BSC.GetBikes();
+
+        filesToUploadDTO.Clear();
+        List<FileDetail> fileDetails = new List<FileDetail>();
+
+        //TODO: have to implement reading file list
+         var response = new ServiceResponse<List<FileDetail>>();
+        //var response = await UDSC.ReturnListOfFileAttachments(bikeNoteId, "BikeNote");
+
+        //if (response.Success)
+        if (response.Data != null)
+        {
+            if(response.Data.Count > 0)
+            {
+                foreach (var file in response.Data)
+                {
+                    FileUploadDTO FDTO = new FileUploadDTO()
+                    {
+                       ContentType = file.MimeType,
+                       FileExistsInFileSystem = true,
+                       FileName = file.OriginalFileName,
+                       fileDetail = file
+                    };
+
+                    filesToUploadDTO.Add(FDTO);
+                }                
+            }
+
+        }
+    }
+
+    private async Task UpdateBikeNote()
+    {
+
+        //If new attachments have been added, they need to be uploaded
+        List<FileUploadDTO> filesToUpload = new List<FileUploadDTO>();
+        foreach (var fileUploadDTO in filesToUploadDTO)
+        {
+            if(fileUploadDTO.FileExistsInFileSystem == false)
+            {
+                filesToUpload.Add(fileUploadDTO);
+            }
+            else
+            {
+            }
+        }
+
+        //Only upload if there are new attachments to upload
+        //if(filesToUpload.Count > 0 )
+        //{
+        //    var resultUpload = await UDSC.UploadFiles(filesToUpload);
+        //    if (!resultUpload.Success)
+        //    {
+        //        //the files weren't uploaded
+
+        //    }
+        //    else
+        //    {
+        //        //Now update the table in the DB
+        //        UploadResultDTO uploadResultDTO = new UploadResultDTO();
+        //        uploadResultDTO.relatedEntityId = bikeNoteId;
+
+        //        uploadResultDTO.relatedEntityName = "BikeNote";
+
+        //        uploadResultDTO.UploadResults = resultUpload.Data;
+
+
+        //        var resultOfTableUpdate = await UDSC.UpdateDBWIthFileAttachmentDetails(uploadResultDTO);
+        //    }
+        //}
+
+
+
+        var result = await BNS.UpdateBikeNote(request);
+        message = result.Message;
+
+        if (result.Success)
+        {
+            NM.NavigateTo(returnUrl);
+        }
+    }
+
+     private async Task DeleteBikeNote(bool deleteConfirmed)
+    {
+
+        if(deleteConfirmed == true)
+        {
+            var result = await BNS.DeleteBikeNote(request._id);
+            message = result.Message;
+
+            if (result.Success)
+            {
+                await BNS.GetBikeNotes(bikeId); 
+                NM.NavigateTo(returnUrl);
+            }            
+        }
+    }
+
+    private async Task AddItemsToFileList(List<FileUploadDTO> files)
+    {
+        //_logger.LogInformation("SAet " + files.Count + " numer of files from file component");
+
+        filesToUploadDTO = files;
+    }
+}
