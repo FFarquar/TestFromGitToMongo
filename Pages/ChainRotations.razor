@@ -1,0 +1,76 @@
+﻿@page "/chainrotations/{chainId}/{bikeId:int}"
+@inject ITripServiceClient TSC;
+@inject IChainServiceClient CSC;
+
+<h3>Chain Rotations for chain @CSC.Chain.ChainLetter</h3>
+
+@if (TSC.ChainRotationsTripsDTO == null || TSC.ChainRotationsTripsDTO.Count == 0)
+{
+    <span>Loading trips for chain rotation</span>
+}
+
+@foreach (var rotation in TSC.ChainRotationsTripsDTO)
+{
+        <div class="group">
+            <div class="media-body">
+                <h5>Chain Rotation  @rotation.ChainRotation</h5>
+                <h5>Distance travelled  @rotation.TotalDistance</h5>
+                <h5>Trips taken  @rotation.Trips.Count</h5>
+
+                   <table class="table table-striped table-bordered">
+       
+                            <thead class="thead-dark">
+
+                                    <tr>
+                                        <th scope="col">Chain</th>
+                                        <th scope="col" width="150px">Date</th>
+                                        <th scope="col">Trip Distance (km)</th>
+                                        <th scope="col">Chain Rotation</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Notes</th>
+                                        <th scope="col">Edit/Delete</th>
+                                    </tr>
+
+                            </thead>
+                            <tbody>
+                                    @foreach (var trip in rotation.Trips)
+                                    {
+                                        <tr>
+                                          @*<td>@trip.Chain.ChainLetter</td>*@
+                                          <td>@trip.ChainLetter</td>
+                                          <td>@trip.Date.ToString("dd MMM yyyy")</td>
+                                          <td>@trip.TripDistance</td>
+                                          <td>@trip.ChainRotation</td>
+                                          <td>@trip.TripDescription</td>
+                                          <td>@trip.TripNotes</td>
+                                          <td><a href="editdeletetrip/@trip._id/@bikeId"><input type="button" value="Edit"></a></td>
+                                        </tr>
+                                        }
+                                </tbody>
+                        </table>
+            </div>
+        </div>
+}
+
+
+@code {
+    [Parameter]
+    public string ChainId { get; set; } = null;
+
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+    }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await TSC.GetChainRotationTrips(int.Parse(ChainId));
+
+            await CSC.GetChain(int.Parse(ChainId));
+
+            
+        }
+}

@@ -1,16 +1,23 @@
 ﻿@page "/"
+@using System.Collections
 @using TestFromGitToMongo.Services
 @using TestFromGitToMongo.Services.httpServicExample
 @inject IBikeServiceClient BSC
 @*@inject IHttpClientServiceImplementation HttpCS*@
 @inject NavigationManager NM
-
+@inject IConfiguration config
 
 <h3>Bikes</h3>
+
+<td>
+@config["API_BaseUrl"]
+</td>
+
 
     @if(BSC.Bikes == null || BSC.Bikes.Count == 0)
 {
     <span>Loading Bikes</span>
+
 }
 
 @foreach (var bike in BSC.Bikes)
@@ -46,12 +53,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //await BSC.GetBikes();
+        await BSC.GetBikes();
         //await HttpCS.GetBikes();
         //await HttpCS.GetBikesWithStream();
         //await HttpCS.Execute();         //Example directly using typed client
 
-        await BSC.GetBikes();
     }
 
     async Task BikeClicked(Bike bike)

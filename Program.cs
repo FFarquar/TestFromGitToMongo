@@ -29,7 +29,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 
 ConfigureServices(builder.Services);
-Console.WriteLine("Base address " + builder.HostEnvironment.BaseAddress);
+//Console.WriteLine("Base address " + builder.HostEnvironment.BaseAddress);
 builder.Services.AddScoped<IBikeServiceClient, BikeServiceClient >();
 //builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthService, AuthServiceUsingHTTPFactory>();
@@ -42,6 +42,7 @@ builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddBlazoredLocalStorage();
 
 
+
 await builder.Build().RunAsync();
 
 //example of how to configure the HTTP client factory in program CS
@@ -52,4 +53,7 @@ static void ConfigureServices(IServiceCollection services)
     services.AddHttpClient<BikeAPIClient>();
 
     services.AddScoped<IHttpClientServiceImplementation, HttpClientFactoryService>();
+
+
 }
+

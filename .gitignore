@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /TestingCode_DOntDeploy/Program.cs
 /TestingCode_DOntDeploy
+
+#dont want development json file
+appsettings.Development.json

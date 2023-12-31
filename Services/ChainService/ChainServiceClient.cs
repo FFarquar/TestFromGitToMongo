@@ -36,7 +36,7 @@ namespace TestFromGitToMongo.Services.ChainService
 
         public async Task GetChain(int chainId)
         {
-            throw new NotImplementedException();
+            Chain = await _bikesClient.GetChain(chainId);
             //var result = await _http.GetFromJsonAsync<ServiceResponse<ChainSummaryDTO>>($"api/Chain/{chainId}");
 
             //if (result != null && result.Data != null)

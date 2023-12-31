@@ -54,7 +54,10 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task GetChainRotationTrips(int chainId)
         {
-            throw new NotImplementedException();
+            var result = await _apiClient.GetChainRotationTrips(chainId);
+            if (result != null && result.Count != 0)
+                ChainRotationsTripsDTO = result;
+
             //var result = await _http.GetFromJsonAsync<ServiceResponse<List<ChainRotationTripsDTO>>>("rotationsforchain/"+chainId);
 
             //if (result != null && result.Data != null)
