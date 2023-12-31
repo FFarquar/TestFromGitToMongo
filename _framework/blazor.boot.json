@@ -1,6 +1,8 @@
 {
   "cacheBootResources": true,
-  "config": [ ],
+  "config": [
+    "appsettings.json"
+  ],
   "debugBuild": false,
   "entryAssembly": "TestFromGitToMongo",
   "icuDataMode": 0,
@@ -18,7 +20,7 @@
       "Microsoft.AspNetCore.Components.dll": "sha256-G\/\/au3QLqkVnP3VnFfOlwJOgnzD260L6xxhEBu56E8k=",
       "Microsoft.AspNetCore.Components.Forms.dll": "sha256-bDlLpLms6qCvNrwyJ\/cWs7hwcySG4MPi3qZNkhxiZi0=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-ug8rQa1zNDOg1DK2x3host4DtridPGpHM4SG57y6Vtw=",
-      "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-SygDIhJ+F1maLEwoOQ4itVI8bK+KYanz3g26J8nSGgo=",
+      "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-0E+rx7egg0hbeXmk3Ucvx6x7FdWRlqGlnDKjfk+sddg=",
       "Microsoft.AspNetCore.Hosting.Abstractions.dll": "sha256-4VEnr\/VXawxchLjnFr86t8XA5fF3ZLb61F6I54GBAoQ=",
       "Microsoft.AspNetCore.Hosting.Server.Abstractions.dll": "sha256-3FWyABkOEBeAcg6oyNO1PytWU+vm8OBnbxtkWVup0TI=",
       "Microsoft.AspNetCore.Http.Abstractions.dll": "sha256-qFKmKNr9iAZiZxOVvLJBfMhkKfDy1GvY81fHh1hiphU=",
@@ -150,7 +152,7 @@
       "System.Xml.ReaderWriter.dll": "sha256-mPfjANOSreY3TzEXdJtyAQK5PqbYhXvqbKp00ZJSB18=",
       "System.Xml.XDocument.dll": "sha256-VQeEN601tUfxIz+yHNZTCh0UZAd3uJ3fLgzcwV7BOIM=",
       "System.Xml.XmlSerializer.dll": "sha256-yDflKompHkvfD23oWsC+3qswBEtv+vcfnD0L2eZgG9w=",
-      "TestFromGitToMongo.dll": "sha256-+AnBzwG5vqSrto\/ZsXtXuKfFAJhfiJIm12gTz4VNJ8c=",
+      "TestFromGitToMongo.dll": "sha256-nGPtSnYlNYv2SXODzVMXPty1YusyhHL3kDhxbsyopMs=",
       "ZstdSharp.dll": "sha256-VKZX+de4WCoEsOirOWgSviiKvr0Z3Ujd2\/PpLOUPOaE="
     },
     "extensions": null,
