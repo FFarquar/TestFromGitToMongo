@@ -24,79 +24,49 @@ namespace TestFromGitToMongo.Services.NoteService
         public List<BikeNote> BikeNotes { get; set ; }
         public BikeNote BikeNote { get; set ; }
 
-        public async Task<ServiceResponse<int>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles)
+        public async Task<ServiceResponse<bool>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles)
         {
 
-            ServiceResponse<int> response = new ServiceResponse<int>();
+            ServiceResponse<bool> response = new ServiceResponse<bool>();
 
-            bikeNote = await _bikeAPIClient.AddNote(bikeNote);
-            if (bikeNote != null)
+            var result = await _bikeAPIClient.Note_Add(bikeNote);
+
+            if (result.Success == true)
             {
                 BikeNote = bikeNote;
-                response.Message = "Note added";
+                return new ServiceResponse<bool> { Message = "added" };
             }
             else
             {
-                response.Success = false;
-                response.Message = "Note not added";
+                BikeNote = new BikeNote();
+                return new ServiceResponse<bool> { Success = false, Message = "Not added. Reason = " + result.Message };
             }
 
-            return response;
-
-
-
-            //var filesUpload = new ServiceResponse<List<UploadResult>>();
-            //if (browserFiles.Count > 0)
+            //if (bikeNote != null)
             //{
-            //    filesUpload = await _UDSC.UploadFiles(browserFiles);
-            //    if (!filesUpload.Success)
-            //    {
-            //        //the files weren't uploaded
-            //        var sr = new ServiceResponse<int>
-            //        {
-            //            Message = "The files weren't uploaded correctly. Bike part not added " + filesUpload.Message,
-            //            Success = false
-            //        };
-            //        return sr;
-            //    }
+            //    BikeNote = bikeNote;
+            //    response.Message = "Note added";
+            //}
+            //else
+            //{
+            //    response.Success = false;
+            //    response.Message = "Note not added";
             //}
 
-                //var result = await _http.PostAsJsonAsync("/api/bikenote/addbikenote", bikeNote);
+            //return response;
 
-                //var srResponse = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
 
-                //if (srResponse.Success)
-                //{
-                //    if (browserFiles.Count != 0)
-                //    {
-
-                //        UploadResultDTO uploadResultDTO = new UploadResultDTO();
-                //        uploadResultDTO.relatedEntityId = srResponse.Data;
-
-                //        uploadResultDTO.relatedEntityName = "BikeNote";
-
-                //        uploadResultDTO.UploadResults = filesUpload.Data;
-
-                //        var updateTable = await _UDSC.UpdateDBWIthFileAttachmentDetails(uploadResultDTO);
-                //    }
-                //}
-                //else
-                //{
-
-                //}
-
-                //return srResponse;
         }
 
         public async Task<ServiceResponse<bool>> DeleteBikeNote(string bikeNoteId)
         {
 
-            var result = await _bikeAPIClient.DeleteNote(bikeNoteId);
+            var result = await _bikeAPIClient.Note_Delete(bikeNoteId);
 
-            if (result == true)
+            if (result.Success == true)
                 return new ServiceResponse<bool> { Message = "Deleted" };
             else
-                return new ServiceResponse<bool> { Success = false, Message = "Not deleted" };
+                return new ServiceResponse<bool> { Success = false, Message = "Not deleted. Reason = " + result.Message };
 
             //var result = await _http.DeleteAsync("/api/bikenote/" + bikeNoteId);
 
@@ -106,7 +76,7 @@ namespace TestFromGitToMongo.Services.NoteService
         public async Task GetBikeNote(string bikeNoteId)
         {
          
-            BikeNote = await _bikeAPIClient.GetBikeNote(bikeNoteId);
+            BikeNote = await _bikeAPIClient.Note_GetNote(bikeNoteId);
             //var result = await _http.GetFromJsonAsync<ServiceResponse<Note>>("api/bikenote/note/" + bikeNoteId);
             //BikeNote = new Note();
             //if (result != null && result.Data != null)
@@ -116,30 +86,22 @@ namespace TestFromGitToMongo.Services.NoteService
         public async Task GetBikeNotes(int bikeId)
         {
 
-            BikeNotes = await _bikeAPIClient.GetListOfNotesForBike(bikeId);
+            BikeNotes = await _bikeAPIClient.Note_GetListForBike(bikeId);
 
 
-            //var result = await _http.GetFromJsonAsync<ServiceResponse<List<Note>>>("api/bikenote/notes/" + bikeId);
-
-            //BikeNotes = new List<Note>();
-            //if (result != null && result.Data != null)
-            //    BikeNotes = result.Data;
         }
 
-        public async Task<ServiceResponse<int>> UpdateBikeNote(BikeNote bikeNote)
+        public async Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote)
         {
 
-            var result = await _bikeAPIClient.UpdateNote(bikeNote);
+            var result = await _bikeAPIClient.Note_Update(bikeNote);
 
-            if (result != null)
-                return new ServiceResponse<int> { Message = "Updated" };
+            if (result.Success == true)
+                return new ServiceResponse<bool> { Message = "Updated" };
             else
             {
-                return new ServiceResponse<int> { Success = false, Message = "Not updated" };
+                return new ServiceResponse<bool> { Success = false, Message = "Not updated. Reason = " +result.Message };
             }
-            //var result = await _http.PutAsJsonAsync("api/bikenote/updateBikeNote", bikeNote);
-
-            //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }
     }
 }

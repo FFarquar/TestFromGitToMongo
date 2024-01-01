@@ -156,7 +156,7 @@
         var result = await BNS.UpdateBikeNote(request);
         message = result.Message;
 
-        if (result.Success)
+        if (result.Success == true)
         {
             NM.NavigateTo(returnUrl);
         }

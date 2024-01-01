@@ -8,8 +8,8 @@ namespace TestFromGitToMongo.Services.NoteService
         Task GetBikeNotes(int bikeId);
         Task GetBikeNote(string bikeNoteId);
 
-        Task<ServiceResponse<int>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles);
-        Task<ServiceResponse<int>> UpdateBikeNote(BikeNote bikeNote);
+        Task<ServiceResponse<bool>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles);
+        Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote);
         Task<ServiceResponse<bool>> DeleteBikeNote(string bikeNoteId);
     }
 }

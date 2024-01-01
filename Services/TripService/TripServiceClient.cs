@@ -22,7 +22,7 @@ namespace TestFromGitToMongo.Services.TripService
         public async Task<ServiceResponse<int>> AddTrip(Trip trip)
         {
 
-            trip = await _apiClient.AddTrip(trip);
+            trip = await _apiClient.Trip_Add(trip);
 
             if (trip != null)
             {
@@ -40,7 +40,7 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task<ServiceResponse<bool>> DeleteTrip(string tripId)
         {
-            var result = await _apiClient.DeleteTrip(tripId);
+            var result = await _apiClient.Trip_Delete(tripId);
 
             if (result == true)
                 return new ServiceResponse<bool> { Message = "Deleted" };
@@ -54,7 +54,7 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task GetChainRotationTrips(int chainId)
         {
-            var result = await _apiClient.GetChainRotationTrips(chainId);
+            var result = await _apiClient.Trip_GetChainRotations(chainId);
             if (result != null && result.Count != 0)
                 ChainRotationsTripsDTO = result;
 
@@ -67,7 +67,7 @@ namespace TestFromGitToMongo.Services.TripService
         public async Task  GetTripAsync(string tripId)
         {
 
-            TripDTO = await _apiClient.GetTrip(tripId);
+            TripDTO = await _apiClient.Trip_Get(tripId);
 
             //var result = await _http.GetFromJsonAsync<ServiceResponse<TripDTO>>("api/Trip/" + tripId);
 
@@ -80,7 +80,7 @@ namespace TestFromGitToMongo.Services.TripService
         public async Task GetTrips()
         {
 
-            Trips = await _apiClient.GetTrips();
+            Trips = await _apiClient.Trip_Get();
         }
         //gets all trips for a specific bike
         public async Task GetTripsForBike(int bikeId)
@@ -90,12 +90,12 @@ namespace TestFromGitToMongo.Services.TripService
 
             //if (result != null && result.Data != null)
             //    Trips = result.Data;
-            Trips = await _apiClient.GetTripsForBike(bikeId);
+            Trips = await _apiClient.Trip_GetTripsForBike(bikeId);
         }
 
         public async Task<ServiceResponse<int>> UpdateTrip(Trip trip)
         {
-            var result = await _apiClient.UpdateTrip(trip);
+            var result = await _apiClient.Trip_Update(trip);
 
             if(result != null)
                 return new ServiceResponse<int> { Message = "Updated"};

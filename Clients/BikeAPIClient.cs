@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using TestFromGitToMongo.Models;
 
 namespace TestFromGitToMongo.Clients
 {
@@ -65,47 +64,106 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        public async Task<TripDTO> GetTrip(string tripId)
+        public async Task<TripDTO> Trip_Get(string tripId)
         {
-            using (var response = await _client.GetAsync("trips/getatrip/"+tripId, HttpCompletionOption.ResponseHeadersRead))
+            //using (var response = await _client.GetAsync("trips/getatrip/"+tripId, HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
+            //    Console.WriteLine("Date returned = " + Trip.Date.ToUniversalTime());
+            //    return Trip;
+
+            //}
+
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/getatrip/"+tripId);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
-                Console.WriteLine("Date returned = " + Trip.Date.ToUniversalTime());
-                return Trip;
-
+                    var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
+                    return Trip;
+                }
+                else
+                {
+                    // Handle failure. Empty list of trips
+                    return new TripDTO();
+                }
             }
         }
 
-        public async Task<List<TripDTO>> GetTrips()
+        public async Task<List<TripDTO>> Trip_Get()
         {
-            using (var response = await _client.GetAsync("trips/getalltrips", HttpCompletionOption.ResponseHeadersRead))
+            //using (var response = await _client.GetAsync("trips/getalltrips", HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
+            //    return Trips;
+            //}
+
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/getalltrips");
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
-                return Trips;
-
+                    var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
+                    return Trips;
+                }
+                else
+                {
+                    // Handle failure. Empty list of trips
+                    return new List<TripDTO>();
+                }
             }
         }
 
-        public async Task<List<TripDTO>> GetTripsForBike(int bikeId)
+        public async Task<List<TripDTO>> Trip_GetTripsForBike(int bikeId)
         {
-            using (var response = await _client.GetAsync("trips/gettripsforbike/"+bikeId, HttpCompletionOption.ResponseHeadersRead))
+            //using (var response = await _client.GetAsync("trips/gettripsforbike/"+bikeId, HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
+            //    return Trips;
+
+            //}
+
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/gettripsforbike/" + bikeId);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
-                return Trips;
-
+                    var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
+                    return Trips;
+                }
+                else
+                {
+                    // Handle failure. Empty list of trips
+                    return new List<TripDTO>();
+                }
             }
         }
 
-        public async Task<bool> DeleteTrip(string tripId)
+        public async Task<bool> Trip_Delete(string tripId)
         {
             using (var response = await _client.DeleteAsync("trips/deletetrip/" + tripId))
             {
@@ -127,7 +185,7 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        public async Task<Trip> AddTrip(Trip trip)
+        public async Task<Trip> Trip_Add(Trip trip)
         {
             var jsonString = JsonSerializer.Serialize(trip);
             
@@ -141,7 +199,7 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        public async Task<Trip> UpdateTrip(Trip trip)
+        public async Task<Trip> Trip_Update(Trip trip)
         {
             var jsonString = JsonSerializer.Serialize(trip);
 
@@ -155,10 +213,10 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        public async Task<List<ChainRotationTripsDTO>> GetChainRotationTrips(int chainId)
+        public async Task<List<ChainRotationTripsDTO>> Trip_GetChainRotations(int chainId)
         {
 
-            var ListOfChainRotations = await ReturnListOfChainRotationsForChain(chainId);
+            var ListOfChainRotations = await Trip_ReturnListOfChainRotationsForChain(chainId);
 
 
             if (ListOfChainRotations.Success == true && ListOfChainRotations.Data != null)
@@ -238,7 +296,7 @@ namespace TestFromGitToMongo.Clients
             return new List<ChainRotationTripsDTO>();
         }
 
-        private async Task<ServiceResponse<List<int>>> ReturnListOfChainRotationsForChain(int chainId)
+        private async Task<ServiceResponse<List<int>>> Trip_ReturnListOfChainRotationsForChain(int chainId)
         {
 
             var result = new List<ChainRotationTripsDTO>();
@@ -388,74 +446,204 @@ namespace TestFromGitToMongo.Clients
         //TODO: Add the register route.
         //TODO: Add the delete trip. Make it only someone who has admin access can do it. Need to change the functions to return role from DB
 
-        public async Task<List<BikeNote>> GetListOfNotesForBike(int bikeid)
+        public async Task<List<BikeNote>> Note_GetListForBike(int bikeid)
         {
-            using (var response = await _client.GetAsync("notes/getnotesforabike/" + bikeid, HttpCompletionOption.ResponseHeadersRead))
+
+            //This works when the route on the API is not protected
+            //using (var response = await _client.GetAsync("notes/getnotesforabike/" + bikeid, HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var Notes = await JsonSerializer.DeserializeAsync<List<BikeNote>>(stream, _options);
+            //    return Notes;
+
+            //}
+
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "notes/getnotesforabike/" + bikeid);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                var Notes = await JsonSerializer.DeserializeAsync<List<BikeNote>>(stream, _options);
-                return Notes;
-
-            }
-        }
-
-        public async Task<BikeNote> AddNote(BikeNote note)
-        {
-            var jsonString = JsonSerializer.Serialize(note);
-
-            using (var response = await _client.PostAsync("notes/addnote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
-            {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
-
-                var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
-                return noteRes;
-            }
-        }
-
-        public async Task<BikeNote> GetBikeNote(string noteId)
-        {
-            using (var response = await _client.GetAsync("notes/getanote/" + noteId, HttpCompletionOption.ResponseHeadersRead))
-            {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
-
-                var Note = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
-                
-                return Note;
-
-            }
-        }
-
-        public async Task<bool> DeleteNote(string noteId)
-        {
-            using (var response = await _client.DeleteAsync("notes/deletenote/" + noteId))
-            {
-
-                var stream = await response.Content.ReadAsStreamAsync();
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    return true;
+                    var Notes = await JsonSerializer.DeserializeAsync<List<BikeNote>>(stream, _options);
+                    return Notes;
+                }
                 else
-                    return false;
+                {
+                    // Handle failure. Empty list of notes
+                    return new List<BikeNote>();
+                }
+            }
 
+        }
+
+        public async Task<ServiceResponse<BikeNote>> Note_Add(BikeNote note)
+        {
+           var jsonString = JsonSerializer.Serialize(note);
+
+            //using (var response = await _client.PostAsync("notes/addnote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+            //    return noteRes;
+            //}
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "notes/addnote");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            ServiceResponse<BikeNote> retResponse = new ServiceResponse<BikeNote>();
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+                    retResponse.Data = noteRes;
+                }
+                else
+                {
+                    // Handle failure. Empty note
+                    retResponse.Data = new BikeNote();
+                    retResponse.Success = false;
+                    retResponse.Message = response.StatusCode.ToString();
+                }
+            }
+
+            return retResponse;
+        }
+
+        public async Task<BikeNote> Note_GetNote(string noteId)
+        {
+            //using (var response = await _client.GetAsync("notes/getanote/" + noteId, HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var Note = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+
+            //    return Note;
+
+            //}
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "notes/getanote/" + noteId);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var Note = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+                    return Note;
+                }
+                else
+                {
+                    // Handle failure. Empty note
+                    return new BikeNote();
+                }
             }
         }
 
-        public async Task<BikeNote> UpdateNote(BikeNote note)
+        public async Task<ServiceResponse<bool>> Note_Delete(string noteId)
+        {
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "notes/deletenote/" + noteId);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            ServiceResponse<bool> retResponse = new ServiceResponse<bool>();
+
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    retResponse.Data = true;
+                    retResponse.Success = true;
+                    retResponse.Message = "Note deleted";
+                }
+                else
+                {
+                    // Handle failure. Empty note
+                    retResponse.Data = false;
+                    retResponse.Success = false;
+                    //var stream = await response.Content.ReadAsStringAsync();
+
+
+                    retResponse.Message = response.StatusCode.ToString();
+
+                }
+            }
+
+            return retResponse;
+        }
+        //public async Task<bool> DeleteNote(string noteId)
+        //{
+
+
+        //    //using (var response = await _client.DeleteAsync("notes/deletenote/" + noteId))
+        //    //{
+
+        //    //    var stream = await response.Content.ReadAsStreamAsync();
+
+        //    //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        //    //        return true;
+        //    //    else
+        //    //        return false;
+
+        //    //}
+        //}
+
+        public async Task<ServiceResponse<BikeNote>> Note_Update(BikeNote note)
         {
             var jsonString = JsonSerializer.Serialize(note);
 
-            using (var response = await _client.PatchAsync("notes/updatenote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
-            {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+            //using (var response = await _client.PatchAsync("notes/updatenote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
 
-                var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
-                return note;
+            //    var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+            //    return note;
+            //}
+
+            var request = new HttpRequestMessage(HttpMethod.Patch, _client.BaseAddress + "notes/updatenote");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            ServiceResponse<BikeNote> retResponse = new ServiceResponse<BikeNote>();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var Note = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
+                    retResponse.Data = Note;
+                }
+                else
+                {
+                    // Handle failure. Empty note
+                    retResponse.Success = false;
+                    retResponse.Data = new BikeNote();
+                    
+                    retResponse.Message = response.StatusCode.ToString();
+                }
             }
+            return retResponse;
         }
 
     }
@@ -466,5 +654,10 @@ namespace TestFromGitToMongo.Clients
         public string user { get; set; }
         public string token { get; set; }
     }
+
+    //public class MessageResponse_General
+    //{
+    //    public string message { get; set; }
+    //}
 
 }
