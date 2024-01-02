@@ -98,7 +98,7 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        public async Task<List<TripDTO>> Trip_Get()
+        public async Task<List<TripDTO>> Trip_GetAllTrips()
         {
             //using (var response = await _client.GetAsync("trips/getalltrips", HttpCompletionOption.ResponseHeadersRead))
             //{
@@ -165,52 +165,109 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<bool> Trip_Delete(string tripId)
         {
-            using (var response = await _client.DeleteAsync("trips/deletetrip/" + tripId))
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "trips/deletetrip/" + tripId);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-               // response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    return true;
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        return true;
+                    else
+                        return false;
+                }
                 else
+                {
+                    // Handle failure
                     return false;
-
-                //var deleteTrip = await JsonSerializer.DeserializeAsync< DeleteTripDTO > (stream, _options);
-
-                //if (deleteTrip != null)
-                //    return deleteTrip.deleted;
-                //else
-                //    return false;
-
+                }
             }
+            //using (var response = await _client.DeleteAsync("trips/deletetrip/" + tripId))
+            //{
+            //   // response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            //        return true;
+            //    else
+            //        return false;
+            //}
         }
 
         public async Task<Trip> Trip_Add(Trip trip)
         {
             var jsonString = JsonSerializer.Serialize(trip);
-            
-            using (var response = await _client.PostAsync("trips/addtrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
-            {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
 
-                var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
-                return tripRes;
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "trips/addtrip");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var Trip = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+                    return Trip;
+                }
+                else
+                {
+                    // Handle failure. Empty trip
+                    return new Trip ();
+                }
             }
+
+            //using (var response = await _client.PostAsync("trips/addtrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+            //    return tripRes;
+            //}
         }
 
         public async Task<Trip> Trip_Update(Trip trip)
         {
             var jsonString = JsonSerializer.Serialize(trip);
 
-            using (var response = await _client.PatchAsync("trips/updatetrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
-            {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+            var request = new HttpRequestMessage(HttpMethod.Patch, _client.BaseAddress + "trips/updatetrip");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await AddTokenToRequest();
 
-                var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
-                return tripRes;
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var Trip = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+                    return Trip;
+                }
+                else
+                {
+                    // Handle failure. Empty trip
+                    return new Trip();
+                }
             }
+
+            //using (var response = await _client.PatchAsync("trips/updatetrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+            //    return tripRes;
+            //}
         }
 
         public async Task<List<ChainRotationTripsDTO>> Trip_GetChainRotations(int chainId)
@@ -227,12 +284,39 @@ namespace TestFromGitToMongo.Clients
                 foreach (var trip in ListOfChainRotations.Data)
                 {
                     i++;
+                    //var chainRotationTripsDTO = new ChainRotationTripsDTO();
+
+                    //var jsonString = JsonSerializer.Serialize(trip);
+
+
+                    //    using (var response = await _client.GetAsync("trips/listofTripsForChainRotation/"+ chainId+"/"+i, HttpCompletionOption.ResponseHeadersRead))
+                    //    {
+                    //        response.EnsureSuccessStatusCode();
+                    //        var stream = await response.Content.ReadAsStreamAsync();
+
+                    //        var tripRes = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
+
+                    //        decimal totDistance = 0;
+                    //        foreach (var trip1 in tripRes)
+                    //        {
+                    //            totDistance = totDistance + (decimal)trip1.TripDistance;
+                    //        }
+                    //        chainRotationTripsDTO.Id = i;
+                    //        chainRotationTripsDTO.ChainId = chainId;
+                    //        chainRotationTripsDTO.TotalDistance = totDistance;
+                    //        chainRotationTripsDTO.ChainRotation = i;
+
+                    //        chainRotationTripsDTO.Trips = tripRes;
+
+                    //        listChainRotationTrips.Add(chainRotationTripsDTO);
+
+                    //    }
+                    //}
+
                     var chainRotationTripsDTO = new ChainRotationTripsDTO();
-
-
-                    var jsonString = JsonSerializer.Serialize(trip);
-
-                    using (var response = await _client.GetAsync("trips/listofTripsForChainRotation/"+ chainId+"/"+i, HttpCompletionOption.ResponseHeadersRead))
+                    var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/listofTripsForChainRotation/" + chainId + "/" + i);
+                    request.Headers.Authorization = await AddTokenToRequest();
+                    using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
                     {
                         response.EnsureSuccessStatusCode();
                         var stream = await response.Content.ReadAsStreamAsync();
@@ -253,60 +337,43 @@ namespace TestFromGitToMongo.Clients
 
                         listChainRotationTrips.Add(chainRotationTripsDTO);
 
-
                     }
-
-
-                    ////TODO Convert this to use MONGO
-                    //var query = from t in _context.Trips
-                    //            join c in _context.Chains on t.ChainId equals c.Id
-                    //            where t.ChainRotation == trip && t.ChainId == chainId
-                    //            select new TripDTO
-                    //            {
-                    //                Id = t.Id,
-                    //                ChainLetter = c.ChainLetter,
-                    //                ChainId = t.ChainId,
-                    //                Date = t.Date,
-                    //                TripDistance = t.TripDistance,
-                    //                ChainRotation = t.ChainRotation,
-                    //                TripDescription = t.TripDescription,
-                    //                TripNotes = t.TripNotes
-                    //            };
-
-                    //chainRotationTripsDTO.Id = i;
-                    //chainRotationTripsDTO.ChainId = chainId;
-                    //chainRotationTripsDTO.TotalDistance =
-                    //    _context.Trips.Where(x => x.ChainId == chainId && x.ChainRotation == trip).Select(i => Convert.ToDecimal(i.TripDistance)).Sum();
-                    //chainRotationTripsDTO.ChainRotation = trip;
-
-                    //chainRotationTripsDTO.Trips = await query.ToListAsync();
-
-                    //listChainRotationTrips.Add(chainRotationTripsDTO);
                 }
 
                 return listChainRotationTrips;
-
             }
             else
             {
                 return new List<ChainRotationTripsDTO>();
             }
-
-
             return new List<ChainRotationTripsDTO>();
         }
 
         private async Task<ServiceResponse<List<int>>> Trip_ReturnListOfChainRotationsForChain(int chainId)
         {
 
+            //var result = new List<ChainRotationTripsDTO>();
+            //using (var response = await _client.GetAsync("trips/listofChainRotForChain/" + chainId, HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    result= await JsonSerializer.DeserializeAsync<List<ChainRotationTripsDTO>>(stream, _options);
+
+            //}
             var result = new List<ChainRotationTripsDTO>();
-            using (var response = await _client.GetAsync("trips/listofChainRotForChain/" + chainId, HttpCompletionOption.ResponseHeadersRead))
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/listofChainRotForChain/" + chainId);
+            request.Headers.Authorization = await AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                result= await JsonSerializer.DeserializeAsync<List<ChainRotationTripsDTO>>(stream, _options);
-
+                    result = await JsonSerializer.DeserializeAsync<List<ChainRotationTripsDTO>>(stream, _options);
+                }
             }
 
             if (result != null && result.Count != 0)

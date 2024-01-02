@@ -80,7 +80,7 @@ namespace TestFromGitToMongo.Services.TripService
         public async Task GetTrips()
         {
 
-            Trips = await _apiClient.Trip_Get();
+            Trips = await _apiClient.Trip_GetAllTrips();
         }
         //gets all trips for a specific bike
         public async Task GetTripsForBike(int bikeId)
