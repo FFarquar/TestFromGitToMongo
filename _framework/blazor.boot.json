@@ -151,7 +151,7 @@
       "System.Xml.ReaderWriter.dll": "sha256-mPfjANOSreY3TzEXdJtyAQK5PqbYhXvqbKp00ZJSB18=",
       "System.Xml.XDocument.dll": "sha256-VQeEN601tUfxIz+yHNZTCh0UZAd3uJ3fLgzcwV7BOIM=",
       "System.Xml.XmlSerializer.dll": "sha256-yDflKompHkvfD23oWsC+3qswBEtv+vcfnD0L2eZgG9w=",
-      "TestFromGitToMongo.dll": "sha256-7WqYXfee0Lf4I3B8Mva9vYK3Gcz49nkF5kBEXv04o1Q=",
+      "TestFromGitToMongo.dll": "sha256-JCA9Hc5SEugxxnqj3rZZxnUIQAgfZ4JS34i3eHFQFfA=",
       "ZstdSharp.dll": "sha256-VKZX+de4WCoEsOirOWgSviiKvr0Z3Ujd2\/PpLOUPOaE="
     },
     "extensions": null,
