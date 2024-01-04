@@ -63,7 +63,7 @@ namespace TestFromGitToMongo.Services.httpclientServicExample
         //Example of a typed client where all processing is offloaded to that client
         private async Task GetBikesWithTypedClient()
         {
-            Bikes = await _bikesClient.GetBikes();
+            Bikes = await _bikesClient.Bikes_GetAll();
         }
         
     }

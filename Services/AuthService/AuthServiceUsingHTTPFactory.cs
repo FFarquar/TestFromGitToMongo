@@ -23,7 +23,7 @@
 
         public async Task<ServiceResponse<string>> Login(UserLogin request)
         {
-            return await _client.Login(request);
+            return await _client.Auth_Login(request);
         }
 
         public Task<ServiceResponse<int>> Register(UserRegister request)

@@ -108,7 +108,7 @@
         var result = await TSC.UpdateTrip(request);
         message = result.Message;
 
-        if (result.Success)
+        if (result.Success == true)
         {
             NavigationManager.NavigateTo(ReturnUrl);
         }
@@ -122,7 +122,7 @@
             var result = await TSC.DeleteTrip(request._id);
             message = result.Message;
 
-            if (result.Success)
+            if (result.Success == true)
             {
                 await CSC.GetChains(bikeId); 
                 NavigationManager.NavigateTo(ReturnUrl);

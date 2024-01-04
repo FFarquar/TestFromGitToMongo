@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Components;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -11,6 +12,9 @@ namespace TestFromGitToMongo.Clients
         private readonly JsonSerializerOptions _options;
         private readonly IBrowserStorageService _browserStorageService;
         private readonly IConfiguration _config;
+        private readonly GlobalVariables _globalVariables;
+
+
 
         //public BikeAPIClient(HttpClient client, IBrowserStorageService browserStorageService)
         //{
@@ -24,28 +28,47 @@ namespace TestFromGitToMongo.Clients
 
         //}
 
-        public BikeAPIClient(HttpClient client, IBrowserStorageService browserStorageService, IConfiguration _config)
+        public BikeAPIClient(HttpClient client, IBrowserStorageService browserStorageService, IConfiguration _config, GlobalVariables globalVariables)
         {
 
             //Console.WriteLine(_config.GetValue<string>("API_Details:API_LOCATION"));
             _client = client;
             _browserStorageService = browserStorageService;
             this._config = _config;
+            _globalVariables = globalVariables;
             _client.BaseAddress = new Uri(_config["API_BaseUrl"]);
             _client.Timeout = new TimeSpan(0, 0, 30);
             _client.DefaultRequestHeaders.Clear();
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
         }
 
-        public async Task<List<Bike>> GetBikes()
+        public async Task<List<Bike>> Bikes_GetAll()
         {
-            using (var response = await _client.GetAsync("bikes", HttpCompletionOption.ResponseHeadersRead))
+            //using (var response = await _client.GetAsync("bikes", HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+            //    var Bikes  = await JsonSerializer.DeserializeAsync<List<Bike>>(stream, _options);
+            //    return Bikes;
+            //}
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "bikes");
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStreamAsync();
-                var Bikes  = await JsonSerializer.DeserializeAsync<List<Bike>>(stream, _options);
-                return Bikes;
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var Bikes = await JsonSerializer.DeserializeAsync<List<Bike>>(stream, _options);
+                    return Bikes;
+                }
+                else
+                {
+                    // Handle failure. Empty list of bikes
+                    return new List<Bike>();
+                }
             }
         }
 
@@ -66,19 +89,9 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<TripDTO> Trip_Get(string tripId)
         {
-            //using (var response = await _client.GetAsync("trips/getatrip/"+tripId, HttpCompletionOption.ResponseHeadersRead))
-            //{
-            //    response.EnsureSuccessStatusCode();
-            //    var stream = await response.Content.ReadAsStreamAsync();
-
-            //    var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
-            //    Console.WriteLine("Date returned = " + Trip.Date.ToUniversalTime());
-            //    return Trip;
-
-            //}
 
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/getatrip/"+tripId);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -100,17 +113,9 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<List<TripDTO>> Trip_GetAllTrips()
         {
-            //using (var response = await _client.GetAsync("trips/getalltrips", HttpCompletionOption.ResponseHeadersRead))
-            //{
-            //    response.EnsureSuccessStatusCode();
-            //    var stream = await response.Content.ReadAsStreamAsync();
-
-            //    var Trips = await JsonSerializer.DeserializeAsync<List<TripDTO>>(stream, _options);
-            //    return Trips;
-            //}
 
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/getalltrips");
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -143,7 +148,7 @@ namespace TestFromGitToMongo.Clients
             //}
 
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/gettripsforbike/" + bikeId);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -167,7 +172,7 @@ namespace TestFromGitToMongo.Clients
         {
 
             var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "trips/deletetrip/" + tripId);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -206,7 +211,7 @@ namespace TestFromGitToMongo.Clients
 
             var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "trips/addtrip");
             request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -241,7 +246,7 @@ namespace TestFromGitToMongo.Clients
 
             var request = new HttpRequestMessage(HttpMethod.Patch, _client.BaseAddress + "trips/updatetrip");
             request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -315,7 +320,7 @@ namespace TestFromGitToMongo.Clients
 
                     var chainRotationTripsDTO = new ChainRotationTripsDTO();
                     var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/listofTripsForChainRotation/" + chainId + "/" + i);
-                    request.Headers.Authorization = await AddTokenToRequest();
+                    request.Headers.Authorization = await Auth_AddTokenToRequest();
                     using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
                     {
                         response.EnsureSuccessStatusCode();
@@ -363,7 +368,7 @@ namespace TestFromGitToMongo.Clients
             //}
             var result = new List<ChainRotationTripsDTO>();
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/listofChainRotForChain/" + chainId);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -430,11 +435,15 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        private async Task <AuthenticationHeaderValue> AddTokenToRequest()
+        private async Task <AuthenticationHeaderValue> Auth_AddTokenToRequest()
         {
-            var token = await _browserStorageService.GetItemFromStorage("jwttoken");
+            //instead of storing the token in the local storage, which is a bad idea, the token will be stored in memory.
+            //this means that when you close the browser, the token will be lost. The user will need to log in each time they
+            //connect to the browser
+            //var token = await _browserStorageService.GetItemFromStorage("jwttoken");
+            //var AuthHeaderVal = new AuthenticationHeaderValue("Bearer", token);
 
-            var AuthHeaderVal = new AuthenticationHeaderValue("Bearer", token);
+            var AuthHeaderVal = new AuthenticationHeaderValue("Bearer", _globalVariables.JWTToken);
 
             return AuthHeaderVal;
 
@@ -443,7 +452,7 @@ namespace TestFromGitToMongo.Clients
         public async Task<ServiceResponse<bool>> TestTheAuthorizedAdminRoute()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "admin");
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
             ServiceResponse<bool> retVal = new ServiceResponse<bool>();
             retVal.Success = false;
 
@@ -470,11 +479,11 @@ namespace TestFromGitToMongo.Clients
 
         //This is an example of how to use the sendasync method to POST and include serializied data and add auth token to header
         //The method is also saving the token to local storage.
-        public async Task<ServiceResponse<string>> Login(UserLogin userLogin)
+        public async Task<ServiceResponse<string>> Auth_Login(UserLogin userLogin)
         {
 
             var httpRequestMessage = new HttpRequestMessage();
-            httpRequestMessage.Headers.Authorization = await AddTokenToRequest();
+            httpRequestMessage.Headers.Authorization = await Auth_AddTokenToRequest();
 
             httpRequestMessage.Method = HttpMethod.Post;
             httpRequestMessage.RequestUri = new Uri(_client.BaseAddress + "auth/login");
@@ -492,7 +501,9 @@ namespace TestFromGitToMongo.Clients
                 if (response.IsSuccessStatusCode)
                 {
                     RegLogDTO registerResponseDTO = JsonSerializer.Deserialize<RegLogDTO>(data)!;
-                    _browserStorageService.AddItemToStorage("jwttoken", registerResponseDTO.token);
+
+                    _globalVariables.JWTToken = registerResponseDTO.token;
+                    //_browserStorageService.AddItemToStorage("jwttoken", registerResponseDTO.token);
 
                     // Handle success
                     retVal.Success = true;
@@ -528,7 +539,7 @@ namespace TestFromGitToMongo.Clients
             //}
 
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "notes/getnotesforabike/" + bikeid);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -564,7 +575,7 @@ namespace TestFromGitToMongo.Clients
 
             var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "notes/addnote");
             request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             ServiceResponse<BikeNote> retResponse = new ServiceResponse<BikeNote>();
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
@@ -602,7 +613,7 @@ namespace TestFromGitToMongo.Clients
 
             //}
             var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "notes/getanote/" + noteId);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -626,7 +637,7 @@ namespace TestFromGitToMongo.Clients
         {
 
             var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "notes/deletenote/" + noteId);
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             ServiceResponse<bool> retResponse = new ServiceResponse<bool>();
 
@@ -687,7 +698,7 @@ namespace TestFromGitToMongo.Clients
 
             var request = new HttpRequestMessage(HttpMethod.Patch, _client.BaseAddress + "notes/updatenote");
             request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            request.Headers.Authorization = await AddTokenToRequest();
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             ServiceResponse<BikeNote> retResponse = new ServiceResponse<BikeNote>();
 

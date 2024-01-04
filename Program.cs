@@ -5,6 +5,7 @@ global using TestFromGitToMongo.Services.httpclientServicExample;
 global using TestFromGitToMongo.Services.TripService;
 global using TestFromGitToMongo.Services.BrowserStorageService;
 global using TestFromGitToMongo.Models;
+global using TestFromGitToMongo.Data;
 global using TestFromGitToMongo.Services.ChainService;
 global using TestFromGitToMongo.Services.NoteService;
 
@@ -38,9 +39,9 @@ builder.Services.AddScoped<ITripServiceClient, TripServiceClient>();
 builder.Services.AddScoped<IChainServiceClient, ChainServiceClient>();
 builder.Services.AddScoped<INoteService, NoteService>();
 
+builder.Services.AddSingleton<GlobalVariables>();
 
 builder.Services.AddBlazoredLocalStorage();
-
 
 
 await builder.Build().RunAsync();

@@ -2,7 +2,6 @@
 @inject IBikeServiceClient BSC;
 @inject NavigationManager NM
 
-
     @if(BSC.Bike == null)
 {
         <span>Loading Bike</span>
@@ -39,6 +38,9 @@
 @code {
     [Parameter]
     public string BikeId { get; set; } = null;
+
+    //displaying stored value for token. Samsung browser on phone is not staying logged in for long
+    public string StorageValue { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {

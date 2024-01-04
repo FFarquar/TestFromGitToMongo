@@ -28,7 +28,7 @@ namespace TestFromGitToMongo.Services.BikeService
 
         public async Task GetBikes()
         {
-            Bikes = await _bikesClient.GetBikes();
+            Bikes = await _bikesClient.Bikes_GetAll();
         }
     }
 }

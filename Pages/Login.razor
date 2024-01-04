@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @inject IAuthService AuthService
+@inject NavigationManager NM
 
 <EditForm Model ="user" OnValidSubmit="HandleLogin">
     <DataAnnotationsValidator/>
@@ -15,7 +16,7 @@
         <ValidationMessage For="@(() => user.password)" />
     </div>
 
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit" class="btn btn-primary">Login</button>
 
     <div class=@messagecssClass>
         <span>@message</span>
@@ -23,6 +24,10 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string returnUrl { get; set; } = string.Empty;
+
     UserLogin user = new UserLogin(); 
 
     string message = string.Empty;
@@ -32,12 +37,15 @@
     {
         var result = await AuthService.Login(user);
         //var result = await AuthService.TestCall(user);
-        
+
         message = result.Message;
         if (result.Success)
+        {
             messagecssClass = "text-success";
+            NM.NavigateTo(returnUrl);
+        }
         else
             messagecssClass = "text-danger";
-
     }
+
 }
