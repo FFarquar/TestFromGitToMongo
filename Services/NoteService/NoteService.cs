@@ -30,8 +30,6 @@ namespace TestFromGitToMongo.Services.NoteService
         public async Task<ServiceResponse<bool>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles)
         {
 
-            //TODO: Change this process to deal with the response from the Node endpoint (AWS S3 response is a bit different)
-            //. Upload of attachments is working (single at the moment)
             var filesUpload = new ServiceResponse<List<UploadResult>>();
             if (browserFiles.Count > 0)
             {
@@ -39,7 +37,6 @@ namespace TestFromGitToMongo.Services.NoteService
                 if (!filesUpload.Success)
                 {
                     //the files weren't uploaded
-                    //var sr = new ServiceResponse<int>
                     var sr = new ServiceResponse<bool>
                     {
                         Message = "The files weren't uploaded correctly. Note not added " + filesUpload.Message,
@@ -47,7 +44,12 @@ namespace TestFromGitToMongo.Services.NoteService
                     };
                     return sr;
                 }
+
+                //Attach the results of the upload to the bikenote object, so it can be written to the notes DB
+                bikeNote.UploadResult = filesUpload.Data;
             }
+
+            
 
             ServiceResponse<bool> response = new ServiceResponse<bool>();
 
@@ -67,68 +69,39 @@ namespace TestFromGitToMongo.Services.NoteService
 
             //var srResponse = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
 
+            ////TODO: 1A: The rest of this code is not required. The UpdateDBWIthFileAttachmentDetails can be removed
+            //if (result.Success)
+            //{
+            //    if (browserFiles.Count != 0)
+            //    {
 
-            if (result.Success)
-            {
-                if (browserFiles.Count != 0)
-                {
+            //        UploadResultDTO uploadResultDTO = new UploadResultDTO();
+            //        //TODO: What is the relatedEntiryID?
+            //        //This is the ID of the object the attachment is related too. Not sure it is needed in Mongo, as the attachments could be 
+            //        //saved with the related object
+            //        //uploadResultDTO.relatedEntityId = result.Data;
 
-                    UploadResultDTO uploadResultDTO = new UploadResultDTO();
-                    //TODO: Need to get the value of this data field.
-                    //uploadResultDTO.relatedEntityId = result.Data;
+            //        //TODO: This may not be required either (unless stored in a seperate collection) as the 
+            //        uploadResultDTO.relatedEntityName = "BikeNote";
 
-                    uploadResultDTO.relatedEntityName = "BikeNote";
+            //        uploadResultDTO.UploadResults = filesUpload.Data;
 
-                    uploadResultDTO.UploadResults = filesUpload.Data;
+            //        //TODO: Need to add method to write data to Mongo DB
+            //        var updateTable = await _UDSC.UpdateDBWIthFileAttachmentDetails(uploadResultDTO);
 
-                    //TODO: Need to add method to write data to Mongo DB
-                    var updateTable = await _UDSC.UpdateDBWIthFileAttachmentDetails(uploadResultDTO);
-                }
-            }
-            else
-            {
+            //        //TODO: Should I just write the file attachment details to the note object as well?
+            //    }
+            //}
+            //else
+            //{
 
-            }
-            //TODO: write service response with valid data
+            //}
+            ////TODO: write service response with valid data
 
-            return new ServiceResponse<bool>();
-            //var result = await _http.PostAsJsonAsync("/api/bikenote/addbikenote", bikeNote);
-            //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            //return new ServiceResponse<bool>();
+            ////var result = await _http.PostAsJsonAsync("/api/bikenote/addbikenote", bikeNote);
+            ////return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }
-
-        //public async Task<ServiceResponse<bool>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles)
-        //{
-
-        //    ServiceResponse<bool> response = new ServiceResponse<bool>();
-
-        //    var result = await _bikeAPIClient.Note_Add(bikeNote);
-
-        //    if (result.Success == true)
-        //    {
-        //        BikeNote = bikeNote;
-        //        return new ServiceResponse<bool> { Message = "added" };
-        //    }
-        //    else
-        //    {
-        //        BikeNote = new BikeNote();
-        //        return new ServiceResponse<bool> { Success = false, Message = "Not added. Reason = " + result.Message };
-        //    }
-
-        //    //if (bikeNote != null)
-        //    //{
-        //    //    BikeNote = bikeNote;
-        //    //    response.Message = "Note added";
-        //    //}
-        //    //else
-        //    //{
-        //    //    response.Success = false;
-        //    //    response.Message = "Note not added";
-        //    //}
-
-        //    //return response;
-
-
-        //}
 
         public async Task<ServiceResponse<bool>> DeleteBikeNote(string bikeNoteId)
         {

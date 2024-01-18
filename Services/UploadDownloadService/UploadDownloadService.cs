@@ -142,25 +142,25 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             //}
         }
 
-        public async Task<ServiceResponse<bool>> UpdateDBWIthFileAttachmentDetails(UploadResultDTO uploadResultDTO)
-        {
-            throw new NotImplementedException();
-            //var resultOfFileDetails = await _http.PostAsJsonAsync("/api/Filesave/uploadedFileDetails", uploadResultDTO);
+        //public async Task<ServiceResponse<bool>> UpdateDBWIthFileAttachmentDetails(UploadResultDTO uploadResultDTO)
+        //{
+        //    throw new NotImplementedException();
+        //    //var resultOfFileDetails = await _http.PostAsJsonAsync("/api/Filesave/uploadedFileDetails", uploadResultDTO);
 
-            //if (resultOfFileDetails != null)
-            //{
-            //    return await resultOfFileDetails.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-            //}
-            //else
-            //{
-            //    return new ServiceResponse<bool>
-            //    {
-            //        Data = false,
-            //        Success = false,
-            //        Message = "Table not updated"
-            //    };
-            //}
-        }
+        //    //if (resultOfFileDetails != null)
+        //    //{
+        //    //    return await resultOfFileDetails.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        //    //}
+        //    //else
+        //    //{
+        //    //    return new ServiceResponse<bool>
+        //    //    {
+        //    //        Data = false,
+        //    //        Success = false,
+        //    //        Message = "Table not updated"
+        //    //    };
+        //    //}
+        //}
 
         public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(InputFileChangeEventArgs e)
         {
@@ -299,14 +299,9 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
                     files.Add(new() { Name = file.FileName });
                     var fileData = file.FileContent;
                     ByteArrayContent byteContent = new ByteArrayContent(fileData);
-//                    StringContent directoryupper = new StringContent("1");
- //                   StringContent directorylower = new StringContent("4");
-                    //byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
                     byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
-                    //content.Add(content: byteContent, name: "\"files\"", fileName: file.FileName);
+
                     content.Add(content: byteContent, name: "\"file\"", fileName: file.FileName);
-//                    content.Add(content: directoryupper, name: "directoryupper");
-//                    content.Add(content: directorylower, name: "directorylower");
                     upload = true;
 
                     _logger.LogInformation("\"file\"");
@@ -332,18 +327,19 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
 
             if (upload)
             {
-                _logger.LogInformation("...about to call FileSave controller. Content = " + JsonConvert.SerializeObject(content));
+                _logger.LogInformation("...about to call Attachment_Add  " + JsonConvert.SerializeObject(content));
                 var response = await _bikeAPIClient.Attachment_Add(content);
                 bool proceedAfterPost = false;
                 if (response.Success)
                 {
                     proceedAfterPost = true;
 
-                    _logger.LogInformation("Got a response from FileSaveController");
+                    _logger.LogInformation("Got a response from Attachment_Add");
 
 
                     if (response.Data is not null)
                     {
+
                         return response;
                     }
                     else

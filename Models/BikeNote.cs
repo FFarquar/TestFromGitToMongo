@@ -15,5 +15,7 @@ namespace TestFromGitToMongo.Models
         public int BikeId { get; set; }
         public DateTime Date { get; set; }
         public string Note { get; set; }
+
+        public List<UploadResult> UploadResult { get; set; } = new List<UploadResult>();
     }
 }

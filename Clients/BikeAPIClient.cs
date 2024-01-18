@@ -2,10 +2,27 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TestFromGitToMongo.Clients
 {
     //Example of a typed client
+    public class BooleanConverter : JsonConverter<bool>
+    {
+
+        public override bool Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options) =>
+            bool.Parse(reader.GetString());
+
+        public override void Write(
+            Utf8JsonWriter writer,
+            bool b,
+            JsonSerializerOptions options) =>
+            writer.WriteStringValue(b.ToString().ToLower());
+    }
+
     public class BikeAPIClient
     {
         public HttpClient _client { get; }
@@ -39,7 +56,11 @@ namespace TestFromGitToMongo.Clients
             _client.BaseAddress = new Uri(_config["API_BaseUrl"]);
             _client.Timeout = new TimeSpan(0, 0, 30);
             _client.DefaultRequestHeaders.Clear();
-            _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            _options = new JsonSerializerOptions { 
+                PropertyNameCaseInsensitive = true,
+                Converters ={new BooleanConverter()}
+
+            };
         }
 
         public async Task<List<Bike>> Bikes_GetAll()
@@ -562,16 +583,7 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<ServiceResponse<BikeNote>> Note_Add(BikeNote note)
         {
-           var jsonString = JsonSerializer.Serialize(note);
-
-            //using (var response = await _client.PostAsync("notes/addnote", new StringContent(jsonString, Encoding.UTF8, "application/json")))
-            //{
-            //    response.EnsureSuccessStatusCode();
-            //    var stream = await response.Content.ReadAsStreamAsync();
-
-            //    var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
-            //    return noteRes;
-            //}
+            var jsonString = JsonSerializer.Serialize(note);
 
             var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "notes/addnote");
             request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
@@ -738,30 +750,33 @@ namespace TestFromGitToMongo.Clients
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    //TODO: have to handle the response here. 
+
                     // Handle success
                     var stream = await response.Content.ReadAsStreamAsync();
 
-                    //var Trip = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
-                    return new ServiceResponse<List<UploadResult>>();
+                    var uploadResults = await JsonSerializer.DeserializeAsync<UploadResponseObj>(stream, _options);
+                    ServiceResponse<List<UploadResult>> srResult = new ServiceResponse<List<UploadResult>>();
+
+                    srResult.Data = uploadResults.UploadResults;
+                    return srResult;
                 }
                 else
                 {
-                    // Handle failure. Empty attachment result. TEMP
-                    return new ServiceResponse<List<UploadResult>>();
+                    // Handle failure. Empty attachment result.
+                    ServiceResponse<List<UploadResult>> srResultFail = new ServiceResponse<List<UploadResult>>();
+                    srResultFail.Success = false;
+                    srResultFail.Message = "Files not uploaded";
+                    return srResultFail;
                 }
             }
-
-            //using (var response = await _client.PostAsync("trips/addtrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
-            //{
-            //    response.EnsureSuccessStatusCode();
-            //    var stream = await response.Content.ReadAsStreamAsync();
-
-            //    var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
-            //    return tripRes;
-            //}
         }
 
+    }
+
+    //Object to desiarlize the response from an upload
+    public class UploadResponseObj
+    {
+        public List<UploadResult> UploadResults { get; set; }
     }
 
     public class RegLogDTO
