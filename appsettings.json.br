@@ -1,3 +1,5 @@
-!€{
-  "API_BaseUrl": "https://graceful-deer-fedora.cyclic.app/api/"
+C€{
+  "API_BaseUrl": "https://graceful-deer-fedora.cyclic.app/api/",
+  "Max_Number_Of_Files_Upload": "10",
+  "Max_File_Size": "4000000"
 }
