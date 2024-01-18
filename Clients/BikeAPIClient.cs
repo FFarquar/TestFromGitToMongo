@@ -724,6 +724,44 @@ namespace TestFromGitToMongo.Clients
             return retResponse;
         }
 
+        //public async Task<ServiceResponse<List<UploadResult>>> Attachment_Add(List<FileUploadDTO> browserFiles)
+        public async Task<ServiceResponse<List<UploadResult>>> Attachment_Add(MultipartFormDataContent content)
+        {
+            //var jsonString = JsonSerializer.Serialize(trip);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "images/upload");
+            //request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Content = content;
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    //TODO: have to handle the response here. 
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    //var Trip = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+                    return new ServiceResponse<List<UploadResult>>();
+                }
+                else
+                {
+                    // Handle failure. Empty attachment result. TEMP
+                    return new ServiceResponse<List<UploadResult>>();
+                }
+            }
+
+            //using (var response = await _client.PostAsync("trips/addtrip", new StringContent(jsonString, Encoding.UTF8, "application/json")))
+            //{
+            //    response.EnsureSuccessStatusCode();
+            //    var stream = await response.Content.ReadAsStreamAsync();
+
+            //    var tripRes = await JsonSerializer.DeserializeAsync<Trip>(stream, _options);
+            //    return tripRes;
+            //}
+        }
+
     }
 
     public class RegLogDTO

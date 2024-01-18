@@ -1,0 +1,145 @@
+﻿@inject ILogger<Index> _logger;
+@inject IUploadDownloadService UDSC;
+@inject IConfiguration _config
+
+<div>
+    <div class="mb-3">
+        <label for="fileSelect">Attachments</label>
+        <InputFile id="fileSelect" OnChange="@OnInputFileChange" multiple />
+
+    </div>
+
+
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+
+                <tr>
+                    <th scope="col">Attachment name</th>
+                    <th scope="col">Action</th>
+                </tr>
+
+        </thead>
+         <tbody>
+        @foreach (var file in ItemsToUpload)
+        {
+            <tr>
+              <td>@file.FileName</td>
+              <td>
+@*                    <button type="button" @onclick="() => RemoveAttachment(file)" class="btn btn-secondary fa fa-sticky-note-o"> Remove attachment</button>*@
+                    <RemoveFileAttachConfirm  ReturnResponse="DealWithAttachmentRemoval" modeRunningIn=modeUsingIn fileToAction=file></RemoveFileAttachConfirm>
+              </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public List<FileUploadDTO> ItemsToUpload { get; set; } =  new List<FileUploadDTO>();
+    [Parameter]
+    public EventCallback<List<FileUploadDTO>> AddItemsToHost { get; set; }
+    [Parameter]
+    public modeRunningIn modeUsingIn { get; set; }
+
+    public enum modeRunningIn
+    {
+        NotSet = 0,
+        AddMode = 1,
+        EditMode = 2
+    }
+
+    public enum returnResponse
+    {
+        NotSet = 0,
+        removeAttachment = 1,   //This just removes the attachment from the list (this attachment hasnt been added to the file system)
+        deleteAttachment = 2,     //This attachment needs to be removed from the file system
+        cancel = 3                       //Nothing to do
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        int maxNumFIlesToUpload = (int)Convert.ToInt16(_config["Max_Number_Of_Files_Upload"]);
+        //foreach (var file in e.GetMultipleFiles(Settings.maxFilesToUpload))
+        foreach (var file in e.GetMultipleFiles(maxNumFIlesToUpload))
+        {
+            var fileExists = ItemsToUpload.FirstOrDefault(fe => fe.FileName == file.Name);
+
+            if(fileExists == null)
+            {
+                _logger.LogInformation("Adding file " + file.Name);
+
+                FileUploadDTO fDTO = new FileUploadDTO()
+                    {
+                        FileName = file.Name,
+                        ContentType = file.ContentType,
+                        FileContent = await GetImageBytes(file),
+                        FileExistsInFileSystem = false
+            };
+                ItemsToUpload.Add(fDTO);
+            }
+        }
+
+        await AddItemsToHost.InvokeAsync(ItemsToUpload);
+    }
+
+    private void RemoveAttachment(FileUploadDTO fileToRemove)
+    {
+        _logger.LogInformation("remove " + fileToRemove.FileName);
+
+        if (modeUsingIn == modeRunningIn.AddMode )
+        {
+            //In add mode, there is no file or database records to amend, just remove the item from the local list
+            ItemsToUpload.Remove(fileToRemove);
+            return;
+        }
+    }
+
+    private async Task<byte[]> GetImageBytes(IBrowserFile file)
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        await using var fileStream = new FileStream(path, FileMode.Create);
+        await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
+        var bytes = new byte[file.Size];
+        fileStream.Position = 0;
+        await fileStream.ReadAsync(bytes);
+        fileStream.Close();
+        return bytes;
+    }
+
+    //private async Task DealWithAttachmentRemoval(returnResponse confirmationResponse, FileUploadDTO fileToAction)
+    public async Task DealWithAttachmentRemoval(RemoveFileAttachmentResponse returnValue)
+    {
+        if(returnValue.ResponseFromComponent == returnResponse.removeAttachment)
+        {
+            ItemsToUpload.Remove(returnValue.fileToAction);
+            return;
+        }
+
+        if(returnValue.ResponseFromComponent == returnResponse.deleteAttachment)
+        {
+            //Will only be one file removed at a time, but the service requires a list
+            List<FileDetail> filetoRemove = new List<FileDetail>();
+
+            filetoRemove.Add(returnValue.fileToAction.fileDetail);
+
+            var response = await UDSC.DeleteFilesFromFileSystem(filetoRemove);
+
+            if(response.Success ==true)
+            {
+                var resultOfDBDelete = await UDSC.DeleteUploadRecordsFromDB(filetoRemove);    
+
+                ItemsToUpload.Remove(returnValue.fileToAction);
+            }
+
+            return;
+        }
+    }
+
+
+    public class RemoveFileAttachmentResponse
+    {
+        public returnResponse ResponseFromComponent { get; set; }
+        public  FileUploadDTO fileToAction { get; set; }
+    }
+}

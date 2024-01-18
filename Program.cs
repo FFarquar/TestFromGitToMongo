@@ -8,6 +8,7 @@ global using TestFromGitToMongo.Models;
 global using TestFromGitToMongo.Data;
 global using TestFromGitToMongo.Services.ChainService;
 global using TestFromGitToMongo.Services.NoteService;
+global using TestFromGitToMongo.Services.UploadDownloadService;
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -19,9 +20,6 @@ using TestFromGitToMongo.Services;
 
 using TestFromGitToMongo.Data;
 using TestFromGitToMongo.Services.AuthService;
-
-
-
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -38,6 +36,7 @@ builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 builder.Services.AddScoped<ITripServiceClient, TripServiceClient>();
 builder.Services.AddScoped<IChainServiceClient, ChainServiceClient>();
 builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<IUploadDownloadService, UploadDownloadService>();
 
 builder.Services.AddSingleton<GlobalVariables>();
 
