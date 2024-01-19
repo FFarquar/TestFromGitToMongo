@@ -9,7 +9,7 @@ namespace TestFromGitToMongo.Models
 {
     public class UploadResult
     {
-        [JsonConverter(typeof(BooleanConverter))]
+      [JsonConverter(typeof(BooleanConverter))]
         public bool Uploaded { get; set; }
         public string? FileName { get; set; }
         public string? StoredFileName { get; set; }

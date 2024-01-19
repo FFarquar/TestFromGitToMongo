@@ -16,6 +16,22 @@ namespace TestFromGitToMongo.Clients
             JsonSerializerOptions options) =>
             bool.Parse(reader.GetString());
 
+        //public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        //{
+        //    Console.WriteLine("Reader tokenb type= " + reader.TokenType);
+        //    string value = reader.GetString();
+        //    string chkValue = value.ToLower();
+        //    if (chkValue.Equals("true") || chkValue.Equals("yes") || chkValue.Equals("1"))
+        //    {
+        //        return true;
+        //    }
+        //    if (value.ToLower().Equals("false") || chkValue.Equals("no") || chkValue.Equals("0"))
+        //    {
+        //        return false;
+        //    }
+        //    throw new JsonException();
+
+        //}
         public override void Write(
             Utf8JsonWriter writer,
             bool b,
@@ -56,10 +72,14 @@ namespace TestFromGitToMongo.Clients
             _client.BaseAddress = new Uri(_config["API_BaseUrl"]);
             _client.Timeout = new TimeSpan(0, 0, 30);
             _client.DefaultRequestHeaders.Clear();
-            _options = new JsonSerializerOptions { 
-                PropertyNameCaseInsensitive = true,
-                Converters ={new BooleanConverter()}
-
+            //_options = new JsonSerializerOptions
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //    Converters = { new BooleanConverter() }
+            //};
+            _options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             };
         }
 
@@ -596,6 +616,8 @@ namespace TestFromGitToMongo.Clients
                 {
                     // Handle success
                     var stream = await response.Content.ReadAsStreamAsync();
+
+
 
                     var noteRes = await JsonSerializer.DeserializeAsync<BikeNote>(stream, _options);
                     retResponse.Data = noteRes;
