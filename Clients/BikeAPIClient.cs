@@ -16,22 +16,6 @@ namespace TestFromGitToMongo.Clients
             JsonSerializerOptions options) =>
             bool.Parse(reader.GetString());
 
-        //public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        //{
-        //    Console.WriteLine("Reader tokenb type= " + reader.TokenType);
-        //    string value = reader.GetString();
-        //    string chkValue = value.ToLower();
-        //    if (chkValue.Equals("true") || chkValue.Equals("yes") || chkValue.Equals("1"))
-        //    {
-        //        return true;
-        //    }
-        //    if (value.ToLower().Equals("false") || chkValue.Equals("no") || chkValue.Equals("0"))
-        //    {
-        //        return false;
-        //    }
-        //    throw new JsonException();
-
-        //}
         public override void Write(
             Utf8JsonWriter writer,
             bool b,
@@ -115,7 +99,7 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<Bike> GetBike(int bikeId)
         {
-            using (var response = await _client.GetAsync("bikes/bike/"+ bikeId, HttpCompletionOption.ResponseHeadersRead))
+            using (var response = await _client.GetAsync("bikes/bike/" + bikeId, HttpCompletionOption.ResponseHeadersRead))
             {
                 response.EnsureSuccessStatusCode();
                 var stream = await response.Content.ReadAsStreamAsync();
@@ -131,7 +115,7 @@ namespace TestFromGitToMongo.Clients
         public async Task<TripDTO> Trip_Get(string tripId)
         {
 
-            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/getatrip/"+tripId);
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "trips/getatrip/" + tripId);
             request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
@@ -267,7 +251,7 @@ namespace TestFromGitToMongo.Clients
                 else
                 {
                     // Handle failure. Empty trip
-                    return new Trip ();
+                    return new Trip();
                 }
             }
 
@@ -476,7 +460,7 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
-        private async Task <AuthenticationHeaderValue> Auth_AddTokenToRequest()
+        private async Task<AuthenticationHeaderValue> Auth_AddTokenToRequest()
         {
             //instead of storing the token in the local storage, which is a bad idea, the token will be stored in memory.
             //this means that when you close the browser, the token will be lost. The user will need to log in each time they
@@ -669,12 +653,39 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<ServiceResponse<bool>> Note_Delete(string noteId)
         {
+            //if there are attachments for this note, they have to be deleted too
+
+            BikeNote bn = await Note_GetNote(noteId);
+
+            if (bn.UploadResult.Count != 0)
+            {
+                List<FileDetail> filesToDelete = new List<FileDetail>();
+                foreach (var ur in bn.UploadResult)
+                {
+                    FileDetail fd = new FileDetail()
+                    {
+                        OriginalFileName = ur.FileName,
+                        ServerPath = ur.ServerPath
+                    };
+                    filesToDelete.Add(fd);
+                }
+
+                var responsetoDelete = await Attachment_Delete(filesToDelete);
+
+                if (responsetoDelete.Success == false)
+                {
+                    return new ServiceResponse<bool>()
+                    {
+                        Success = false,
+                        Message = "Attachment(s) for this note couldn't be deleted. The note has not been deleted either"
+                    };
+                }
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "notes/deletenote/" + noteId);
             request.Headers.Authorization = await Auth_AddTokenToRequest();
 
             ServiceResponse<bool> retResponse = new ServiceResponse<bool>();
-
 
             using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
@@ -700,6 +711,7 @@ namespace TestFromGitToMongo.Clients
 
             return retResponse;
         }
+
         //public async Task<bool> DeleteNote(string noteId)
         //{
 
@@ -751,14 +763,13 @@ namespace TestFromGitToMongo.Clients
                     // Handle failure. Empty note
                     retResponse.Success = false;
                     retResponse.Data = new BikeNote();
-                    
+
                     retResponse.Message = response.StatusCode.ToString();
                 }
             }
             return retResponse;
         }
 
-        //public async Task<ServiceResponse<List<UploadResult>>> Attachment_Add(List<FileUploadDTO> browserFiles)
         public async Task<ServiceResponse<List<UploadResult>>> Attachment_Add(MultipartFormDataContent content)
         {
             //var jsonString = JsonSerializer.Serialize(trip);
@@ -793,6 +804,35 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
+        public async Task<ServiceResponse<List<bool>>> Attachment_Delete(List<FileDetail> filesToDelete)
+        {
+            ServiceResponse<List<bool>> FileDeleteResults = new ServiceResponse<List<bool>>();
+            List<bool> fileDeletions = new List<bool>();
+            foreach (var file in filesToDelete)
+            {
+                string[] path = file.ServerPath.Split("/");
+                var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "images/delete/" + path[0] + "/" + path[1] + "/" + file.OriginalFileName);
+                request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+                using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        fileDeletions.Add(true);
+                    }
+                    else
+                    {
+                        fileDeletions.Add(false);
+                        FileDeleteResults.Success = false;
+                        FileDeleteResults.Message = FileDeleteResults.Message + ".  " + file.OriginalFileName + "  wasnt deleted";
+                    }
+                }
+
+                FileDeleteResults.Data = fileDeletions;
+            }
+
+            return FileDeleteResults;
+        }
     }
 
     //Object to desiarlize the response from an upload

@@ -12,11 +12,6 @@ namespace TestFromGitToMongo.Services.NoteService
 
         private readonly IUploadDownloadService _UDSC;
 
-        //public NoteService(BikeAPIClient bikeAPIClient)
-        //{
-        //    _bikeAPIClient = bikeAPIClient;
-        //}
-
         public NoteService(BikeAPIClient bikeAPIClient, IUploadDownloadService Udsc)
         {
             _bikeAPIClient = bikeAPIClient;

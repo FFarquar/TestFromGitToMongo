@@ -29,11 +29,11 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
         public async Task<ServiceResponse<List<bool>>> DeleteFilesFromFileSystem(List<FileDetail> filesToDelete)
 
         {
-            throw new NotImplementedException();
-            ////var response = await _http.DeleteAsync("api/Filesave/deleteFilesFromServer");
-            ////Had to use a Put to do a batch delete. See controller for more details
-            //var response = await _http.PutAsJsonAsync("api/Filesave/deleteFilesFromServer", filesToDelete);
 
+            //var response = await _http.DeleteAsync("api/Filesave/deleteFilesFromServer");
+            //Had to use a Put to do a batch delete. See controller for more details
+            var response = await _bikeAPIClient.Attachment_Delete(filesToDelete);
+            return response;
             //ServiceResponse<List<bool>> newFileDeleteResults = new ServiceResponse<List<bool>>();
             //if (response != null & response.IsSuccessStatusCode)
             //{
@@ -51,15 +51,68 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             //    {
             //        Data = new List<bool>(),
             //        Success = false,
-            //        Message = "The response from th server was not valid. Not known if files removed"
+            //        Message = "The response from the server was not valid. Not known if files removed"
             //    };
             //}
 
         }
 
-        public async Task<ServiceResponse<bool>> DeleteUploadRecordsFromDB(List<FileDetail> filesToDelete)
+        public async Task<ServiceResponse<bool>> DeleteUploadRecordsFromDB(List<FileDetail> filesToDelete, object relatedObject)
         {
-            throw new NotImplementedException();
+
+            switch (relatedObject.GetType().Name.ToLower())
+            {
+                case "bikenote":
+                    //cast the generic object to a BikeNote
+                    BikeNote bikenotetoUpdate = (BikeNote)relatedObject;
+
+                    foreach (var file in filesToDelete)
+                    {
+
+                        for (int i = bikenotetoUpdate.UploadResult.Count - 1; i >= 0; i--)
+                        {
+                            if (bikenotetoUpdate.UploadResult[i].ServerPath == file.ServerPath && bikenotetoUpdate.UploadResult[i].FileName == file.OriginalFileName)
+                            {
+                                //this file has to be removed
+                                bikenotetoUpdate.UploadResult.RemoveAt(i);
+                                //break;
+                            }
+
+                        }
+                    }
+
+                    ServiceResponse<BikeNote> responseNote = new ServiceResponse<BikeNote>();
+                    responseNote = await _bikeAPIClient.Note_Update(bikenotetoUpdate);
+
+                    //put together the response to the caller
+                    if(responseNote.Success)
+                    {
+                        //Update worked
+                        return new ServiceResponse<bool>();
+                    }
+                    else
+                    {
+                        //Update failed
+                        return new ServiceResponse<bool>()
+                        {
+                            Success = false,
+                            Message = responseNote.Message
+                        };
+                    }
+
+                    break;
+
+                default:
+                    //Have to implement all other object types
+                    throw new NotImplementedException();
+
+            }
+          
+
+
+                    
+            //TODO: Have to delete the file attachment from the note entry in Mongo. Need to know what the parent object is (could be note or bike or trip etc). Some refactoring
+            //required here. Perhaps the correct place for this action is in the service dealing with the object (such as the note)
             //var response = await _http.PutAsJsonAsync("api/Filesave/deleteFilesFromFileDetailsTable", filesToDelete);
 
             //ServiceResponse<bool> newFileDeleteResults = new ServiceResponse<bool>();
@@ -271,7 +324,6 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
         //        Message = "Some issue creating file content to pass to server"
         //    };
         }
-
 
 
         public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e)

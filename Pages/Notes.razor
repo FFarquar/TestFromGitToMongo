@@ -58,7 +58,6 @@ else
     //TODO : have to implement File attachments
     private static List<BikeNoteWithFileAttachmentDTO> BikesNotesWithFA = new List<BikeNoteWithFileAttachmentDTO>();
 
-
     protected  async Task AddNote()
     {
         var returnURL = @NM.ToBaseRelativePath(NM.Uri);
@@ -84,7 +83,8 @@ else
             //    responseFromUDSC.Data = new List<FileDetail>();
             //}
 
-            var responseFromUDSC = new ServiceResponse<List<FileDetail>>();
+
+            //var responseFromUDSC = new ServiceResponse<List<FileDetail>>();
             //responseFromUDSC.Data = new List<FileDetail>();
 
             BikeNoteWithFileAttachmentDTO BNWFA = new BikeNoteWithFileAttachmentDTO()
@@ -92,10 +92,12 @@ else
                 Id = bp.Id,
                 Date = bp.Date,
                 Note = bp.Note,
-                Files = responseFromUDSC.Data,
+                Files = bp.UploadResult,
                _id = bp._id
+
             };
 
+            Console.WriteLine("BP upload result = " + BNWFA.Files.Count);
             BikesNotesWithFA.Add(BNWFA);
         }
 

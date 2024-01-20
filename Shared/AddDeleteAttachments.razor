@@ -25,7 +25,6 @@
             <tr>
               <td>@file.FileName</td>
               <td>
-@*                    <button type="button" @onclick="() => RemoveAttachment(file)" class="btn btn-secondary fa fa-sticky-note-o"> Remove attachment</button>*@
                     <RemoveFileAttachConfirm  ReturnResponse="DealWithAttachmentRemoval" modeRunningIn=modeUsingIn fileToAction=file></RemoveFileAttachConfirm>
               </td>
             </tr>
@@ -41,6 +40,8 @@
     public EventCallback<List<FileUploadDTO>> AddItemsToHost { get; set; }
     [Parameter]
     public modeRunningIn modeUsingIn { get; set; }
+    [Parameter]
+    public object relatedObject { get; set; }
 
     public enum modeRunningIn
     {
@@ -121,13 +122,24 @@
             //Will only be one file removed at a time, but the service requires a list
             List<FileDetail> filetoRemove = new List<FileDetail>();
 
-            filetoRemove.Add(returnValue.fileToAction.fileDetail);
+            //Just give enough detail for the API to extract the details it needs to delete the file
+            FileDetail fd = new FileDetail()
+            {
+                OriginalFileName =  returnValue.fileToAction.fileDetail.FileName,
+                ServerPath = returnValue.fileToAction.fileDetail.ServerPath
+
+                //TODO: check this. Not tested
+            };
+
+
+            filetoRemove.Add(fd);
 
             var response = await UDSC.DeleteFilesFromFileSystem(filetoRemove);
 
             if(response.Success ==true)
             {
-                var resultOfDBDelete = await UDSC.DeleteUploadRecordsFromDB(filetoRemove);    
+
+                var resultOfDBDelete = await UDSC.DeleteUploadRecordsFromDB(filetoRemove, relatedObject);    
 
                 ItemsToUpload.Remove(returnValue.fileToAction);
             }

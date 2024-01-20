@@ -33,7 +33,7 @@
         <ValidationMessage For="@(() => request.Note)" />
     </div>
 
-    <AddDeleteAttachments AddItemsToHost="AddItemsToFileList" ItemsToUpload=filesToUploadDTO modeUsingIn=AddDeleteAttachments.modeRunningIn.EditMode/>
+    <AddDeleteAttachments AddItemsToHost="AddItemsToFileList" ItemsToUpload=filesToUploadDTO modeUsingIn=AddDeleteAttachments.modeRunningIn.EditMode relatedObject=@request/>
     <div>
         <PopContainer ConfirmedChanged="DeleteBikeNote" />
         <p/>
@@ -63,7 +63,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await BNS.GetBikeNote(bikeNoteId);
+        //await BNS.GetBikeNote(bikeNoteId);
 
         if(request != null)
         {
@@ -72,43 +72,61 @@
             request.Date = BNS.BikeNote.Date;
             request.Note = BNS.BikeNote.Note;
             request._id= BNS.BikeNote._id;
+            request.UploadResult = BNS.BikeNote.UploadResult;
         }
-       //Console.WriteLine(BNS.BikeNote.Note);
+        //Console.WriteLine(BNS.BikeNote.Note);
     }
 
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
 
+        
         await BSC.GetBikes();
+
+        await BNS.GetBikeNote(bikeNoteId);
 
         filesToUploadDTO.Clear();
         List<FileDetail> fileDetails = new List<FileDetail>();
 
         //TODO: have to implement reading file list
-         var response = new ServiceResponse<List<FileDetail>>();
+        var response = BNS.BikeNote.UploadResult;
+        //var response = new ServiceResponse<List<FileDetail>>();
         //var response = await UDSC.ReturnListOfFileAttachments(bikeNoteId, "BikeNote");
 
-        //if (response.Success)
-        if (response.Data != null)
+        if(response.Count > 0)
         {
-            if(response.Data.Count > 0)
+            foreach (var file in response)
             {
-                foreach (var file in response.Data)
+                FileUploadDTO FDTO = new FileUploadDTO()
                 {
-                    FileUploadDTO FDTO = new FileUploadDTO()
-                    {
-                       ContentType = file.MimeType,
-                       FileExistsInFileSystem = true,
-                       FileName = file.OriginalFileName,
-                       fileDetail = file
-                    };
+                    ContentType = file.MimeType,
+                    FileExistsInFileSystem = true,
+                    FileName = file.FileName,
+                    fileDetail = file
+                };
 
-                    filesToUploadDTO.Add(FDTO);
-                }                
-            }
-
+                filesToUploadDTO.Add(FDTO);
+            }                
         }
+        //if (response.Data != null)
+        //{
+        //    if(response.Data.Count > 0)
+        //    {
+        //        foreach (var file in response.Data)
+        //        {
+        //            FileUploadDTO FDTO = new FileUploadDTO()
+        //            {
+        //               ContentType = file.MimeType,
+        //               FileExistsInFileSystem = true,
+        //               FileName = file.OriginalFileName,
+        //               fileDetail = file
+        //            };
+
+        //            filesToUploadDTO.Add(FDTO);
+        //        }                
+        //    }
+        //}
     }
 
     private async Task UpdateBikeNote()

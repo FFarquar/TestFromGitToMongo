@@ -1,0 +1,72 @@
+﻿@*A component to deal with confirming of removing/deleting FileAttachments*@
+@*This is based off the PopContainer.razor component*@
+
+<div class="pop-container">
+        @if (Show)
+        {
+            <div class="popconfirm">
+                @Message
+                <button type="button" class="btn btn-warning" @onclick="() => Confirmation(AddDeleteAttachments.returnResponse.cancel)">No</button>
+                <button type="button" class="btn btn-primary" @onclick="() => Confirmation(AddDeleteAttachments.returnResponse.deleteAttachment)">Yes</button>
+            </div>
+
+        }
+        <button type="button" class="@Class" @onclick="ShowPop">@Title</button>
+</div>
+
+@code {
+    [Parameter]
+    public AddDeleteAttachments.modeRunningIn modeRunningIn { get; set; }
+
+    public bool Show { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Class { get; set; } = "btn btn-danger";
+    [Parameter] public string Message { get; set; } = "File will be immediately deleted from the server Are you sure?";
+    [Parameter] public EventCallback<AddDeleteAttachments.RemoveFileAttachmentResponse> ReturnResponse { get; set; }
+    [Parameter]
+    public FileUploadDTO fileToAction {get; set;}
+
+    public async Task Confirmation(AddDeleteAttachments.returnResponse value)
+    {
+        Show = false;
+        AddDeleteAttachments.RemoveFileAttachmentResponse returnVal = new AddDeleteAttachments.RemoveFileAttachmentResponse()
+        {
+            ResponseFromComponent = value,
+            fileToAction = fileToAction
+        };
+        await ReturnResponse.InvokeAsync(returnVal);
+    }
+
+    public void ShowPop()
+    {
+        if(fileToAction.FileExistsInFileSystem == false)
+        {
+            //In add mode, can just return the removveAttachmentResponse
+            Confirmation(AddDeleteAttachments.returnResponse.removeAttachment);
+        }
+        else
+        {
+            //Have to show the yes/no optoin
+            Show = true;
+        }
+        
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //If this component is being called with modeRunningIn = AddMode, 
+        //the returnrResponse will always be  returnResponse = removeAttachment
+
+        //The confirm delete operation only needs to be handled when existing files (that sit in the file system)
+        //need confirmation to delete
+        if(modeRunningIn == AddDeleteAttachments.modeRunningIn.AddMode)
+        {
+            Title = "Remove";
+            //Confirmation(AddDeleteAttachments.returnResponse.removeAttachment);
+        }
+        else
+        {
+            Title = "Delete";
+        }
+    }
+}

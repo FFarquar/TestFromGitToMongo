@@ -22,7 +22,7 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
         Task<ServiceResponse<DotNetStreamReference>> GeFile(string storedPath, string fileName);
 
         Task<ServiceResponse<List<bool>>> DeleteFilesFromFileSystem(List<FileDetail> filesToDelete);
-        Task<ServiceResponse<bool>> DeleteUploadRecordsFromDB(List<FileDetail> filesToDelete);
+        Task<ServiceResponse<bool>> DeleteUploadRecordsFromDB(List<FileDetail> filesToDelete, object relatedObject);
         Task<ServiceResponse<List<FileDetail>>> ReturnListOfFileAttachments(int relatedRecordId, string classType);
     }
 

@@ -16,7 +16,9 @@ namespace TestFromGitToMongo.Models
         /// <summary>
         /// Contains a reference to the fileDetail Object. Used when editing records with existing attachments. CAn be null
         /// </summary>
-        public FileDetail? fileDetail { get; set; } = null;
+        //public FileDetail? fileDetail { get; set; } = null;
+        public UploadResult? fileDetail { get; set; } = null;
+
 
 
     }
