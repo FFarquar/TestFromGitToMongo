@@ -34,26 +34,7 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             //Had to use a Put to do a batch delete. See controller for more details
             var response = await _bikeAPIClient.Attachment_Delete(filesToDelete);
             return response;
-            //ServiceResponse<List<bool>> newFileDeleteResults = new ServiceResponse<List<bool>>();
-            //if (response != null & response.IsSuccessStatusCode)
-            //{
-            //    newFileDeleteResults = await response.Content.ReadFromJsonAsync<ServiceResponse<List<bool>>>();
-            //}
 
-            //if (newFileDeleteResults != null)
-            //{
-            //    return newFileDeleteResults;
-            //}
-            //else
-            //{
-            //    //the response wasnt valid, need to pass back a failed response
-            //    return new ServiceResponse<List<bool>>
-            //    {
-            //        Data = new List<bool>(),
-            //        Success = false,
-            //        Message = "The response from the server was not valid. Not known if files removed"
-            //    };
-            //}
 
         }
 
@@ -140,8 +121,10 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
 
         public async Task<ServiceResponse<DotNetStreamReference>> GeFile(string storedPath, string fileName)
         {
-            throw new NotImplementedException();
 
+            var response = await _bikeAPIClient.Attachment_GeFile(storedPath, fileName);
+
+            return response;
             //string newstring = storedPath.Replace(@"\", "/");
 
             //newstring = HttpUtility.UrlEncode(newstring);
@@ -195,29 +178,9 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             //}
         }
 
-        //public async Task<ServiceResponse<bool>> UpdateDBWIthFileAttachmentDetails(UploadResultDTO uploadResultDTO)
-        //{
-        //    throw new NotImplementedException();
-        //    //var resultOfFileDetails = await _http.PostAsJsonAsync("/api/Filesave/uploadedFileDetails", uploadResultDTO);
-
-        //    //if (resultOfFileDetails != null)
-        //    //{
-        //    //    return await resultOfFileDetails.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-        //    //}
-        //    //else
-        //    //{
-        //    //    return new ServiceResponse<bool>
-        //    //    {
-        //    //        Data = false,
-        //    //        Success = false,
-        //    //        Message = "Table not updated"
-        //    //    };
-        //    //}
-        //}
-
         public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(InputFileChangeEventArgs e)
         {
-            //This method not used in source application.
+            //This method not used in source application, not this one. It can be removed
             throw new NotImplementedException();
         //    //This task uses a list of broswerFiles. It is not tirggered as soon as the dialog box is closed, but later in the process
         //    List<File> files = new List<File>();
@@ -324,7 +287,6 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
         //        Message = "Some issue creating file content to pass to server"
         //    };
         }
-
 
         public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e)
         {

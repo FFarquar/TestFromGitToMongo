@@ -4,7 +4,7 @@
 
 @*A component to display files for a specific record. Will also handle the download of said files*@
 
-    @for (var i = 0; i < listOfFiles.Count; i++)
+    @for (var i = 0; i < listOfFiles.Count; i++) 
     {
         if (i > 0)
         {
@@ -26,12 +26,13 @@
         {
             //This function is a copy of the one made in the TestFileUpload2.razor.js. I moved it to its own script file so other pages can read it too
             _jsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./fileScripts.js");
+
         }
     }
 
     private async Task DownloadFile(string storedPath, string fileName, string orignalFileName)
     {
-        var resultOfService = await UDSC.GeFile(storedPath, fileName);
+        var resultOfService = await UDSC.GeFile(storedPath, orignalFileName);
 
         if(!resultOfService.Success)
         {
@@ -39,6 +40,7 @@
         }
         else
         {
+
             await JS.InvokeVoidAsync("downloadFileFromStream", orignalFileName, resultOfService.Data);
         }
     }

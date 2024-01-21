@@ -9,7 +9,13 @@ namespace TestFromGitToMongo.Services.NoteService
         Task GetBikeNote(string bikeNoteId);
 
         Task<ServiceResponse<bool>> AddBikeNote(BikeNote bikeNote, List<FileUploadDTO> browserFiles);
-        Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote);
+        /// <summary>
+        /// This method updates an bikenote
+        /// </summary>
+        /// <param name="bikeNote">The new updated BikeNote ojbect</param>
+        /// <param name="files">These are any new files that may have been added to the note. It should only include new additions</param>
+        /// <returns></returns>
+        Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote, List<FileUploadDTO>? files);
         Task<ServiceResponse<bool>> DeleteBikeNote(string bikeNoteId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -833,7 +834,40 @@ namespace TestFromGitToMongo.Clients
 
             return FileDeleteResults;
         }
+
+        public async Task<ServiceResponse<DotNetStreamReference>> Attachment_GeFile(string storedPath, string fileName)
+        {
+            string[] path = storedPath.Split("/");
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response is not null)
+                {
+                    ServiceResponse<DotNetStreamReference> returnVal = new ServiceResponse<DotNetStreamReference>();
+                   
+                    returnVal.Data = new DotNetStreamReference(await response.Content.ReadAsStreamAsync());
+                    returnVal.Data.Stream.Position = 0;
+                    return returnVal;
+                    //return new ServiceResponse<DotNetStreamReference>
+                    //{
+                    //    Data = new DotNetStreamReference(response.Content.ReadAsStream())
+                    //};
+                }
+                else
+                {
+                    return new ServiceResponse<DotNetStreamReference>
+                    {
+                        Success = false,
+                        Message = "Some issue getting file"
+                    };
+                }
+            }
+        }
     }
+
+
 
     //Object to desiarlize the response from an upload
     public class UploadResponseObj

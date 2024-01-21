@@ -171,7 +171,7 @@
 
 
 
-        var result = await BNS.UpdateBikeNote(request);
+        var result = await BNS.UpdateBikeNote(request, filesToUpload);
         message = result.Message;
 
         if (result.Success == true)

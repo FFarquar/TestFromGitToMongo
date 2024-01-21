@@ -131,16 +131,55 @@ namespace TestFromGitToMongo.Services.NoteService
 
         }
 
-        public async Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote)
-        {
+        //public async Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote)
+        //{
 
+        //    var result = await _bikeAPIClient.Note_Update(bikeNote);
+
+        //    if (result.Success == true)
+        //        return new ServiceResponse<bool> { Message = "Updated" };
+        //    else
+        //    {
+        //        return new ServiceResponse<bool> { Success = false, Message = "Not updated. Reason = " +result.Message };
+        //    }
+        //}
+
+        public async Task<ServiceResponse<bool>> UpdateBikeNote(BikeNote bikeNote, List<FileUploadDTO>? files)
+        {
+            if(files != null && files.Count > 0)
+            {
+                //have to add the files to the S3 bucket
+                var filesUpload = new ServiceResponse<List<UploadResult>>();
+                if (files.Count > 0)
+                {
+                    filesUpload = await _UDSC.UploadFiles(files);
+                    if (!filesUpload.Success)
+                    {
+                        //the files weren't uploaded
+                        var sr = new ServiceResponse<bool>
+                        {
+                            Message = "The files weren't uploaded correctly. Note not amended " + filesUpload.Message,
+                            Success = false
+                        };
+                        return sr;
+                    }
+
+                    //Attach the results of the upload to the bikenote object, so it can be written to the notes DB
+
+                    foreach (var item in filesUpload.Data)
+                    {
+                        bikeNote.UploadResult.Add(item);
+                    }
+                    //bikeNote.UploadResult = filesUpload.Data;
+                }
+            }
             var result = await _bikeAPIClient.Note_Update(bikeNote);
 
             if (result.Success == true)
                 return new ServiceResponse<bool> { Message = "Updated" };
             else
             {
-                return new ServiceResponse<bool> { Success = false, Message = "Not updated. Reason = " +result.Message };
+                return new ServiceResponse<bool> { Success = false, Message = "Not updated. Reason = " + result.Message };
             }
         }
     }
