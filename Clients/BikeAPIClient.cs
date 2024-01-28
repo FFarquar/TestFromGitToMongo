@@ -838,32 +838,54 @@ namespace TestFromGitToMongo.Clients
         public async Task<ServiceResponse<DotNetStreamReference>> Attachment_GeFile(string storedPath, string fileName)
         {
             string[] path = storedPath.Split("/");
-            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
-            request.Headers.Authorization = await Auth_AddTokenToRequest();
+            //var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
+            //request.Headers.Authorization = await Auth_AddTokenToRequest();
 
-            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+
+            ////This works and gets the file but doenst contain the auth token
+            _client.DefaultRequestHeaders.Authorization = await Auth_AddTokenToRequest();
+            var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
+
+            if (imageStreamRes is not null)
             {
-                if (response is not null)
+                return new ServiceResponse<DotNetStreamReference>
                 {
-                    ServiceResponse<DotNetStreamReference> returnVal = new ServiceResponse<DotNetStreamReference>();
-                   
-                    returnVal.Data = new DotNetStreamReference(await response.Content.ReadAsStreamAsync());
-                    returnVal.Data.Stream.Position = 0;
-                    return returnVal;
-                    //return new ServiceResponse<DotNetStreamReference>
-                    //{
-                    //    Data = new DotNetStreamReference(response.Content.ReadAsStream())
-                    //};
-                }
-                else
-                {
-                    return new ServiceResponse<DotNetStreamReference>
-                    {
-                        Success = false,
-                        Message = "Some issue getting file"
-                    };
-                }
+                    Data = new DotNetStreamReference(imageStreamRes.Content.ReadAsStream())
+                };
             }
+            else
+            {
+                return new ServiceResponse<DotNetStreamReference>
+                {
+                    Success = false,
+                    Message = "Some issue getting file"
+                };
+            }
+
+
+            //this is the original request, that doesnt work
+            //using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            //{
+            //    if (response is not null)
+            //    {
+
+            //    //TODO: THE JS Interop cant render the file not sure if the file needs to be read as a memory stream
+            //    //read this https://learn.microsoft.com/en-us/aspnet/core/blazor/file-downloads?view=aspnetcore-8.0
+            //        ServiceResponse<DotNetStreamReference> returnVal = new ServiceResponse<DotNetStreamReference>();
+
+            //        returnVal.Data = new DotNetStreamReference(await response.Content.ReadAsStreamAsync());
+            //        return returnVal;
+
+            //    }
+            //    else
+            //    {
+            //        return new ServiceResponse<DotNetStreamReference>
+            //        {
+            //            Success = false,
+            //            Message = "Some issue getting file"
+            //        };
+            //    }
+            //}
         }
     }
 

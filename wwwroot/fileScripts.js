@@ -1,6 +1,6 @@
 ﻿
 window.downloadFileFromStream = async (filename, contentStreamReference) => {
-    console.debug("Filename = " + filename);
+    console.log("Filename = " + filename);
     const arrayBuffer = await contentStreamReference.arrayBuffer();
     const blob = new Blob([arrayBuffer]);
     const url = URL.createObjectURL(blob);
