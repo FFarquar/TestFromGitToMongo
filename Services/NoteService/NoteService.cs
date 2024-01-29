@@ -155,9 +155,11 @@ namespace TestFromGitToMongo.Services.NoteService
                 var filesUpload = new ServiceResponse<List<UploadResult>>();
                 if (files.Count > 0)
                 {
-                    string[] folderStruct = new string[1];
+
+
+                    string[] folderStruct = new string[2];
                     folderStruct[0] = "notes";
-                    folderStruct[1] = DateTime.Now.ToString("dd_mm_yyyy");
+                    folderStruct[1] = DateTime.Now.ToString("yyyy_MM_dd");
                     filesUpload = await _UDSC.UploadFiles(files, folderStruct);
                     if (!filesUpload.Success)
                     {
