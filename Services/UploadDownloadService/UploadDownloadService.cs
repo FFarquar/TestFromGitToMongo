@@ -288,7 +288,138 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
         //    };
         }
 
-        public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e)
+        //public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e)
+        //{
+        //    //this method should be deprecated in favour of the method that can accept an array of folder values (below)
+        //    //This task uses a list of fileUploadDTO's. It is not tirggered as soon as the dialog box is closed, but later in the process
+        //    List<File> files = new List<File>();
+        //    //long maxFileSize = Settings.maxFileSize;
+        //    long maxFileSize = (long)Convert.ToDouble(_config["Max_File_Size"]);
+
+        //    bool upload = false;
+        //    List<UploadResult> uploadResults = new();
+
+        //    _logger.LogInformation("Uploading files from UploadDownloadServiceClient");
+        //    using var content = new MultipartFormDataContent();
+        //    StringContent directoryupper = new StringContent("1");
+        //    StringContent directorylower = new StringContent("4");
+        //    content.Add(content: directoryupper, name: "directoryupper");
+        //    content.Add(content: directorylower, name: "directorylower");
+
+
+        //    foreach (var file in e)
+        //    {
+        //        try
+        //        {
+        //            files.Add(new() { Name = file.FileName });
+        //            var fileData = file.FileContent;
+        //            ByteArrayContent byteContent = new ByteArrayContent(fileData);
+        //            byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+
+        //            content.Add(content: byteContent, name: "\"file\"", fileName: file.FileName);
+        //            upload = true;
+
+        //            _logger.LogInformation("\"file\"");
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            _logger.LogInformation("{FileName} not uploaded (Err: 6): {Message}", file.FileName, ex.Message);
+
+        //            uploadResults.Add(
+        //                new()
+        //                {
+        //                    FileName = file.FileName,
+        //                    ErrorCode = 6,
+        //                    Uploaded = false
+        //                });
+        //        }
+
+        //    }
+
+        //    _logger.LogInformation("upload variable = " + upload);
+
+
+        //    if (upload)
+        //    {
+        //        _logger.LogInformation("...about to call Attachment_Add  " + JsonConvert.SerializeObject(content));
+        //        var response = await _bikeAPIClient.Attachment_Add(content);
+        //        bool proceedAfterPost = false;
+        //        if (response.Success)
+        //        {
+        //            proceedAfterPost = true;
+
+        //            _logger.LogInformation("Got a response from Attachment_Add");
+
+
+        //            if (response.Data is not null)
+        //            {
+
+        //                return response;
+        //            }
+        //            else
+        //            {
+        //                return new ServiceResponse<List<UploadResult>>
+        //                {
+        //                    Success = false,
+        //                    Message = "Null response from service on server"
+        //                };
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInformation("{FileName} could not reach FileSave endpoint (Err: 7)");
+        //        }
+        //    }
+
+        //    //    HttpResponseMessage response = new HttpResponseMessage();
+        //    //    bool proceedAfterPost = false;
+        //    //    try
+        //    //    {
+        //    //        //response = await _http.PostAsync("api/Filesave", content);
+        //    //        response = await _bikeAPIClient.Attachment_Add(content);
+
+        //    //        proceedAfterPost = true;
+        //    //    }
+        //    //    catch (Exception ex)
+        //    //    {
+        //    //        _logger.LogInformation("...exception thrown = " + ex.Message);
+        //    //    }
+
+        //    //    //var response = await _http.PostAsync("api/Filesave", content);
+        //    //    if (response.IsSuccessStatusCode == false | proceedAfterPost == false)
+        //    //    {
+        //    //        _logger.LogInformation("{FileName} could not reach FileSave endpoint (Err: 7)");
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        _logger.LogInformation("Got a response from FileSaveController");
+        //    //        var newUploadResults = await response.Content.ReadFromJsonAsync<ServiceResponse<List<UploadResult>>>();
+
+        //    //        if (newUploadResults is not null)
+        //    //        {
+        //    //            return newUploadResults;
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            return new ServiceResponse<List<UploadResult>>
+        //    //            {
+        //    //                Success = false,
+        //    //                Message = "Null response from service on server"
+        //    //            };
+        //    //        }
+        //    //    }
+        //    //}
+
+        //    return new ServiceResponse<List<UploadResult>>
+        //    {
+        //        Success = false,
+        //        Message = "Some issue creating file content to pass to server"
+        //    };
+        //}
+
+        public async Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e, string[] folderStructure)
         {
             //This task uses a list of fileUploadDTO's. It is not tirggered as soon as the dialog box is closed, but later in the process
             List<File> files = new List<File>();
@@ -299,13 +430,16 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             List<UploadResult> uploadResults = new();
 
             _logger.LogInformation("Uploading files from UploadDownloadServiceClient");
+
+            var folderNames = string.Join(",", folderStructure);  //The folder structure, seperated by comma's to be passed to the API
+
             using var content = new MultipartFormDataContent();
-            StringContent directoryupper = new StringContent("1");
-            StringContent directorylower = new StringContent("4");
-            content.Add(content: directoryupper, name: "directoryupper");
-            content.Add(content: directorylower, name: "directorylower");
-
-
+            //StringContent directoryupper = new StringContent("1");
+            //StringContent directorylower = new StringContent("4");
+            //content.Add(content: directoryupper, name: "directoryupper");
+            //content.Add(content: directorylower, name: "directorylower");
+            StringContent folders = new StringContent(folderNames);
+            content.Add(content: folders, name: "folders");
             foreach (var file in e)
             {
                 try
@@ -418,17 +552,17 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             };
         }
 
-        private async Task<byte[]> GetImageBytes(IBrowserFile file)
-        {
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            await using var fileStream = new FileStream(path, FileMode.Create);
-            await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
-            var bytes = new byte[file.Size];
-            fileStream.Position = 0;
-            await fileStream.ReadAsync(bytes);
-            fileStream.Close();
-            return bytes;
-        }
+        //private async Task<byte[]> GetImageBytes(IBrowserFile file)
+        //{
+        //    var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        //    await using var fileStream = new FileStream(path, FileMode.Create);
+        //    await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
+        //    var bytes = new byte[file.Size];
+        //    fileStream.Position = 0;
+        //    await fileStream.ReadAsync(bytes);
+        //    fileStream.Close();
+        //    return bytes;
+        //}
     }
 
     public class File

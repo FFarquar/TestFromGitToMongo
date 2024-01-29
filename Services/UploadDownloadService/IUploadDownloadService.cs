@@ -15,8 +15,9 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
         Task<ServiceResponse<List<UploadResult>>> UploadFiles(InputFileChangeEventArgs e);
 
         //Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<IBrowserFile> e);
-        Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e);
-       // Task<ServiceResponse<bool>> UpdateDBWIthFileAttachmentDetails(UploadResultDTO uploadResultDTO);       //Not needed in this application as attachments details are stored with parent object
+        //Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e);
+        Task<ServiceResponse<List<UploadResult>>> UploadFiles(List<FileUploadDTO> e, string[] folderStructure);
+        // Task<ServiceResponse<bool>> UpdateDBWIthFileAttachmentDetails(UploadResultDTO uploadResultDTO);       //Not needed in this application as attachments details are stored with parent object
 
 
         Task<ServiceResponse<DotNetStreamReference>> GeFile(string storedPath, string fileName);

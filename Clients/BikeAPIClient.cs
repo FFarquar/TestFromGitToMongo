@@ -889,8 +889,6 @@ namespace TestFromGitToMongo.Clients
         }
     }
 
-
-
     //Object to desiarlize the response from an upload
     public class UploadResponseObj
     {
