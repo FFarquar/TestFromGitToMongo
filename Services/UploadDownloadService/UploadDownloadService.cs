@@ -433,7 +433,7 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
 
             var folderNames = string.Join(",", folderStructure);  //The folder structure, seperated by comma's to be passed to the API
 
-            Console.WriteLine("Foldernames = " + folderNames);
+            
             using var content = new MultipartFormDataContent();
             //StringContent directoryupper = new StringContent("1");
             //StringContent directorylower = new StringContent("4");

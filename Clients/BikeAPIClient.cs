@@ -805,14 +805,47 @@ namespace TestFromGitToMongo.Clients
             }
         }
 
+        //public async Task<ServiceResponse<List<bool>>> Attachment_Delete(List<FileDetail> filesToDelete)
+        //{
+
+        //    ServiceResponse<List<bool>> FileDeleteResults = new ServiceResponse<List<bool>>();
+        //    List<bool> fileDeletions = new List<bool>();
+        //    foreach (var file in filesToDelete)
+        //    {
+        //        string[] path = file.ServerPath.Split("/");
+        //        var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "images/delete/" + path[0] + "/" + path[1] + "/" + file.OriginalFileName);
+        //        request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+        //        using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+        //        {
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                fileDeletions.Add(true);
+        //            }
+        //            else
+        //            {
+        //                fileDeletions.Add(false);
+        //                FileDeleteResults.Success = false;
+        //                FileDeleteResults.Message = FileDeleteResults.Message + ".  " + file.OriginalFileName + "  wasnt deleted";
+        //            }
+        //        }
+
+        //        FileDeleteResults.Data = fileDeletions;
+        //    }
+
+        //    return FileDeleteResults;
+        //}
+
         public async Task<ServiceResponse<List<bool>>> Attachment_Delete(List<FileDetail> filesToDelete)
         {
+
             ServiceResponse<List<bool>> FileDeleteResults = new ServiceResponse<List<bool>>();
             List<bool> fileDeletions = new List<bool>();
             foreach (var file in filesToDelete)
             {
-                string[] path = file.ServerPath.Split("/");
-                var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "images/delete/" + path[0] + "/" + path[1] + "/" + file.OriginalFileName);
+                //string[] path = file.ServerPath.Split("/");
+                string path = file.ServerPath.Replace("/", ",");
+                var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "images/delete/" + path + "/" + file.OriginalFileName);
                 request.Headers.Authorization = await Auth_AddTokenToRequest();
 
                 using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
@@ -837,15 +870,12 @@ namespace TestFromGitToMongo.Clients
 
         public async Task<ServiceResponse<DotNetStreamReference>> Attachment_GeFile(string storedPath, string fileName)
         {
-            string[] path = storedPath.Split("/");
-            //var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
-            //request.Headers.Authorization = await Auth_AddTokenToRequest();
+            //string[] path = storedPath.Split("/");
+            string path = storedPath.Replace("/", ",");
 
-
-            ////This works and gets the file but doenst contain the auth token
             _client.DefaultRequestHeaders.Authorization = await Auth_AddTokenToRequest();
-            var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
-
+            //var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
+            var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "images/getafile/" + path + "/" + fileName);
             if (imageStreamRes is not null)
             {
                 return new ServiceResponse<DotNetStreamReference>
