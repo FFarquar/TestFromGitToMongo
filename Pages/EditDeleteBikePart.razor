@@ -1,0 +1,191 @@
+﻿@page "/editdeletebikepart/{bikePartId}/{bikeId:int}"
+@inject IBikePartService BPS
+@inject IBikeServiceClient BSC
+@inject IUploadDownloadService UDSC
+@inject NavigationManager NM
+@inject ILogger<Index> _logger
+
+<h3>Edit Bike Part</h3>
+
+<EditForm Model="request">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="mb-3">
+        <label for="bikeId">Bike</label>
+        <InputSelect id="bikeId" @bind-Value="request.bikeId" class="form-control">
+                @foreach(var bike in BSC.Bikes)
+                {
+                    <option value="@bike.Id">@bike.Year @bike.Model</option>
+                }
+        </InputSelect> 
+
+        <ValidationMessage For="@(() => request.bikeId)" />
+    </div>
+
+    
+    
+<div class="mb-3">
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="request.Name" class="form-control"/>
+        <ValidationMessage For="@(() => request.Name)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="cost">Cost $</label>
+        
+        <InputNumber id="cost" @bind-Value="request.Cost" class="form-control"/>
+        <ValidationMessage For="@(() => request.Cost)" />
+    </div>
+       
+    <div class="mb-3">
+        <label for="datePurchased">Date Purchased</label>
+        <InputDate id="datePurchased" @bind-Value="request.DatePurchased" class="form-control"/>
+        <ValidationMessage For="@(() => request.DatePurchased)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="purchasedFrom">Purchased From</label>
+        <InputText id="purchasedFrom" @bind-Value="request.PurchasedFrom" class="form-control"/>
+        <ValidationMessage For="@(() => request.PurchasedFrom)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="notes">Notes</label>
+        <InputText id="notes" @bind-Value="request.Notes" class="form-control"/>
+        <ValidationMessage For="@(() => request.Notes)" />
+    </div>
+
+    <AddDeleteAttachments AddItemsToHost="AddItemsToFileList" ItemsToUpload=filesToUploadDTO modeUsingIn=AddDeleteAttachments.modeRunningIn.EditMode relatedObject=@request/>
+
+    <div>
+        <PopContainer ConfirmedChanged="DeleteBikePart" />
+        <p/>
+        <button type="submit" @onclick="@(()=> UpdateBikePart())"  class="btn btn-secondary">Update</button>
+    </div>
+
+    @message
+</EditForm>
+
+@code {
+
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string returnUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public string bikePartId { get; set; } = string.Empty;
+
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    string message = string.Empty;
+    private static List<Bike> Bikes = new List<Bike>();
+
+    BikePart request = new BikePart();
+
+    public List<FileUploadDTO> filesToUploadDTO = new List<FileUploadDTO>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await BPS.GetBikePart(bikePartId);
+
+        if(request != null)
+        {
+            request.Id = BPS.BikePart.Id;
+            request._id = BPS.BikePart._id;
+            request.bikeId = BPS.BikePart.bikeId;
+            request.Name = BPS.BikePart.Name;
+            request.Cost = BPS.BikePart.Cost;
+            request.DatePurchased = BPS.BikePart.DatePurchased;
+            request.PurchasedFrom = BPS.BikePart.PurchasedFrom;
+            request.Notes = BPS.BikePart.Notes;
+            request.UploadResult = BPS.BikePart.UploadResult;
+        }
+        Console.WriteLine(BPS.BikePart.Name);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //this method fires before OnParamatersSetAsync
+        base.OnInitialized();
+
+        await BSC.GetBikes();
+
+        await BPS.GetBikePart(bikePartId);
+
+        filesToUploadDTO.Clear();
+        List<FileDetail> fileDetails = new List<FileDetail>();
+
+        // var response = await UDSC.ReturnListOfFileAttachments(bikePartId, "BikePart");
+        var response = BPS.BikePart.UploadResult;
+
+        if(response.Count > 0)
+        {
+            foreach (var file in response)
+            {
+                FileUploadDTO FDTO = new FileUploadDTO()
+                {
+                    ContentType = file.MimeType,
+                    FileExistsInFileSystem = true,
+                    FileName = file.FileName,
+                    fileDetail = file
+                };
+
+                filesToUploadDTO.Add(FDTO);
+            }                
+        }
+
+    }
+
+    private async Task UpdateBikePart()
+    {
+
+        //If new attachments have been added, they need to be uploaded
+        List<FileUploadDTO> filesToUpload = new List<FileUploadDTO>();
+        foreach (var fileUploadDTO in filesToUploadDTO)
+        {
+            if(fileUploadDTO.FileExistsInFileSystem == false)
+            {
+                filesToUpload.Add(fileUploadDTO);
+            }
+            else
+            {
+            }
+        }
+
+
+        var result = await BPS.UpdateBikePart(request, filesToUpload);
+        message = result.Message;
+
+        if (result.Success == true)
+        {
+            NM.NavigateTo(returnUrl);
+        }
+  
+    }
+
+
+    private async Task DeleteBikePart(bool deleteConfirmed)
+    {
+
+        if(deleteConfirmed == true)
+        {
+            var result = await BPS.DeleteBikePart(request._id);
+            message = result.Message;
+
+            if (result.Success)
+            {
+                await BPS.GetBikeParts(bikeId); 
+                NM.NavigateTo(returnUrl);
+            }            
+        }
+    }
+
+    
+    private async Task AddItemsToFileList(List<FileUploadDTO> files)
+    {
+
+        filesToUploadDTO = files;
+    }
+}

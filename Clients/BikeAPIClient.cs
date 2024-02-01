@@ -34,18 +34,6 @@ namespace TestFromGitToMongo.Clients
 
 
 
-        //public BikeAPIClient(HttpClient client, IBrowserStorageService browserStorageService)
-        //{
-        //    _client = client;
-        //    _browserStorageService = browserStorageService;
-        //    _client.BaseAddress = new Uri(Settings.API_BaseUrl);
-        //    _client.Timeout = new TimeSpan(0, 0, 30);
-        //    _client.DefaultRequestHeaders.Clear();
-        //    _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        //    //_config = config;
-
-        //}
-
         public BikeAPIClient(HttpClient client, IBrowserStorageService browserStorageService, IConfiguration _config, GlobalVariables globalVariables)
         {
 
@@ -68,6 +56,7 @@ namespace TestFromGitToMongo.Clients
             };
         }
 
+        #region Bikes...
         public async Task<List<Bike>> Bikes_GetAll()
         {
             //using (var response = await _client.GetAsync("bikes", HttpCompletionOption.ResponseHeadersRead))
@@ -112,6 +101,9 @@ namespace TestFromGitToMongo.Clients
 
             }
         }
+        #endregion
+
+        #region Trip...
 
         public async Task<TripDTO> Trip_Get(string tripId)
         {
@@ -219,16 +211,7 @@ namespace TestFromGitToMongo.Clients
                     return false;
                 }
             }
-            //using (var response = await _client.DeleteAsync("trips/deletetrip/" + tripId))
-            //{
-            //   // response.EnsureSuccessStatusCode();
-            //    var stream = await response.Content.ReadAsStreamAsync();
 
-            //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            //        return true;
-            //    else
-            //        return false;
-            //}
         }
 
         public async Task<Trip> Trip_Add(Trip trip)
@@ -434,7 +417,9 @@ namespace TestFromGitToMongo.Clients
 
 
         }
+        #endregion
 
+        #region Chains...
         public async Task<ChainSummaryDTO> GetChain(int chainId)
         {
             using (var response = await _client.GetAsync("chains/getchain/" + chainId, HttpCompletionOption.ResponseHeadersRead))
@@ -460,7 +445,9 @@ namespace TestFromGitToMongo.Clients
 
             }
         }
+        #endregion
 
+        #region Auth...
         private async Task<AuthenticationHeaderValue> Auth_AddTokenToRequest()
         {
             //instead of storing the token in the local storage, which is a bad idea, the token will be stored in memory.
@@ -546,10 +533,11 @@ namespace TestFromGitToMongo.Clients
 
             return retVal;
         }
+        #endregion
 
         //TODO: Add the register route.
-        //TODO: Add the delete trip. Make it only someone who has admin access can do it. Need to change the functions to return role from DB
 
+        #region Notes...
         public async Task<List<BikeNote>> Note_GetListForBike(int bikeid)
         {
 
@@ -713,23 +701,6 @@ namespace TestFromGitToMongo.Clients
             return retResponse;
         }
 
-        //public async Task<bool> DeleteNote(string noteId)
-        //{
-
-
-        //    //using (var response = await _client.DeleteAsync("notes/deletenote/" + noteId))
-        //    //{
-
-        //    //    var stream = await response.Content.ReadAsStreamAsync();
-
-        //    //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        //    //        return true;
-        //    //    else
-        //    //        return false;
-
-        //    //}
-        //}
-
         public async Task<ServiceResponse<BikeNote>> Note_Update(BikeNote note)
         {
             var jsonString = JsonSerializer.Serialize(note);
@@ -770,7 +741,9 @@ namespace TestFromGitToMongo.Clients
             }
             return retResponse;
         }
+        #endregion
 
+        #region Attachments...
         public async Task<ServiceResponse<List<UploadResult>>> Attachment_Add(MultipartFormDataContent content)
         {
             //var jsonString = JsonSerializer.Serialize(trip);
@@ -804,37 +777,6 @@ namespace TestFromGitToMongo.Clients
                 }
             }
         }
-
-        //public async Task<ServiceResponse<List<bool>>> Attachment_Delete(List<FileDetail> filesToDelete)
-        //{
-
-        //    ServiceResponse<List<bool>> FileDeleteResults = new ServiceResponse<List<bool>>();
-        //    List<bool> fileDeletions = new List<bool>();
-        //    foreach (var file in filesToDelete)
-        //    {
-        //        string[] path = file.ServerPath.Split("/");
-        //        var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "images/delete/" + path[0] + "/" + path[1] + "/" + file.OriginalFileName);
-        //        request.Headers.Authorization = await Auth_AddTokenToRequest();
-
-        //        using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
-        //        {
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                fileDeletions.Add(true);
-        //            }
-        //            else
-        //            {
-        //                fileDeletions.Add(false);
-        //                FileDeleteResults.Success = false;
-        //                FileDeleteResults.Message = FileDeleteResults.Message + ".  " + file.OriginalFileName + "  wasnt deleted";
-        //            }
-        //        }
-
-        //        FileDeleteResults.Data = fileDeletions;
-        //    }
-
-        //    return FileDeleteResults;
-        //}
 
         public async Task<ServiceResponse<List<bool>>> Attachment_Delete(List<FileDetail> filesToDelete)
         {
@@ -917,6 +859,193 @@ namespace TestFromGitToMongo.Clients
             //    }
             //}
         }
+        #endregion
+
+        #region BikeParts...
+        public async Task<List<BikePart>> BikePart_GetListForBike(int bikeid)
+        {
+
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "parts/getpartsforabike/" + bikeid);
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    try
+                    {
+                        var BikeParts = await JsonSerializer.DeserializeAsync<List<BikePart>>(stream, _options);
+                        return BikeParts;
+
+                    }
+                    catch (Exception e)
+                    {
+
+                        Console.WriteLine("Exception in DeserializeAsync List<BikePart> " + e.Message);
+                        return new List<BikePart>();
+                    }
+                    //var BikeParts = await JsonSerializer.DeserializeAsync<List<BikePart>>(stream, _options);
+                    //return BikeParts;
+                }
+                else
+                {
+                    // Handle failure. Empty list of notes
+                    return new List<BikePart>();
+                }
+            }
+
+        }
+
+        public async Task<BikePart> BikePart_GetBikePart(string bikePartId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress + "parts/getapart/" + bikePartId);
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var BikePart = await JsonSerializer.DeserializeAsync<BikePart>(stream, _options);
+                    return BikePart;
+                }
+                else
+                {
+                    // Handle failure. Empty Bike Part
+                    return new BikePart();
+                }
+            }
+        }
+
+        public async Task<ServiceResponse<BikePart>> BikePart_Update(BikePart bikePart)
+        {
+            var jsonString = JsonSerializer.Serialize(bikePart);
+
+            var request = new HttpRequestMessage(HttpMethod.Patch, _client.BaseAddress + "parts/updatepart");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            ServiceResponse<BikePart> retResponse = new ServiceResponse<BikePart>();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    var bPart = await JsonSerializer.DeserializeAsync<BikePart>(stream, _options);
+                    retResponse.Data = bPart;
+                }
+                else
+                {
+                    // Handle failure. Empty note
+                    retResponse.Success = false;
+                    retResponse.Data = new BikePart();
+
+                    retResponse.Message = response.StatusCode.ToString();
+                }
+            }
+            return retResponse;
+        }
+
+        public async Task<ServiceResponse<BikePart>> BikePart_Add(BikePart note)
+        {
+            var jsonString = JsonSerializer.Serialize(note);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "parts/addpart");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            ServiceResponse<BikePart> retResponse = new ServiceResponse<BikePart>();
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+
+
+                    var noteRes = await JsonSerializer.DeserializeAsync<BikePart>(stream, _options);
+                    retResponse.Data = noteRes;
+                }
+                else
+                {
+                    // Handle failure. Empty bikepart
+                    retResponse.Data = new BikePart();
+                    retResponse.Success = false;
+                    retResponse.Message = response.StatusCode.ToString();
+                }
+            }
+
+            return retResponse;
+        }
+
+        public async Task<ServiceResponse<bool>> BikePart_Delete(string bikePartId)
+        {
+            //if there are attachments for this bikepart, they have to be deleted too
+
+            BikePart bp = await BikePart_GetBikePart(bikePartId);
+
+            if (bp.UploadResult.Count != 0)
+            {
+                List<FileDetail> filesToDelete = new List<FileDetail>();
+                foreach (var ur in bp.UploadResult)
+                {
+                    FileDetail fd = new FileDetail()
+                    {
+                        OriginalFileName = ur.FileName,
+                        ServerPath = ur.ServerPath
+                    };
+                    filesToDelete.Add(fd);
+                }
+
+                var responsetoDelete = await Attachment_Delete(filesToDelete);
+
+                if (responsetoDelete.Success == false)
+                {
+                    return new ServiceResponse<bool>()
+                    {
+                        Success = false,
+                        Message = "Attachment(s) for this bike part couldn't be deleted. The bikepart has not been deleted either"
+                    };
+                }
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "parts/deletepart/" + bikePartId);
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            ServiceResponse<bool> retResponse = new ServiceResponse<bool>();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    retResponse.Data = true;
+                    retResponse.Success = true;
+                    retResponse.Message = "Bikepart deleted";
+                }
+                else
+                {
+                    // Handle failure. Empty note
+                    retResponse.Data = false;
+                    retResponse.Success = false;
+
+
+                    retResponse.Message = response.StatusCode.ToString();
+
+                }
+            }
+
+            return retResponse;
+        }
+        #endregion
     }
 
     //Object to desiarlize the response from an upload

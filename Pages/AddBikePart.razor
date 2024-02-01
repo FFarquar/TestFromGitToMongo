@@ -1,0 +1,115 @@
+﻿@page "/addbikepart/{bikeId:int}"
+@*@using BikeChainUsage.Shared*@
+@using Newtonsoft.Json
+@using Microsoft.Extensions.Logging;
+@inject IBikePartService BPS
+@inject IBikeServiceClient BSC
+@inject NavigationManager NM
+@*@inject IUploadDownloadService UDS*@
+@inject ILogger<Index> _logger;
+
+<h3>Add Bike Part</h3>
+
+<EditForm Model="request" OnValidSubmit="AddNewBikePart">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="mb-3">
+
+
+        <ValidationMessage For="@(() => request.bikeId)" />
+    </div>
+
+   <div class="mb-3">
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="request.Name" class="form-control"/>
+        <ValidationMessage For="@(() => request.Name)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="cost">Cost $</label>
+        <InputNumber id="cost" @bind-Value="request.Cost" class="form-control"/>
+        <ValidationMessage For="@(() => request.Cost)" />
+    </div>
+
+        <div class="mb-3">
+        <label for="date">Date purchased</label>
+        <InputDate id="date" @bind-Value="request.DatePurchased" class="form-control"/>
+        <ValidationMessage For="@(() => request.DatePurchased)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="purchasedFrom">Purchased from</label>
+        <InputText id="purchasedFrom" @bind-Value="request.PurchasedFrom" class="form-control"/>
+        <ValidationMessage For="@(() => request.PurchasedFrom)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="notes">Notes</label>
+        <InputText id="notes" @bind-Value="request.Notes" class="form-control"/>
+        <ValidationMessage For="@(() => request.Notes)" />
+    </div>
+
+
+
+     <AddDeleteAttachments AddItemsToHost="AddItemsToFileList" ItemsToUpload=filesToUploadDTO modeUsingIn=AddDeleteAttachments.modeRunningIn.AddMode/>
+    <button type="submit" class="btn btn-primary">Apply</button>
+
+    @message
+</EditForm>
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    BikePart request = new BikePart();
+
+    string message = string.Empty;
+
+    private List<UploadResult> uploadResults = new();
+
+    public List<FileUploadDTO> filesToUploadDTO = new List<FileUploadDTO>();
+
+    private async Task AddItemsToFileList(List<FileUploadDTO> files)
+    {
+        //_logger.LogInformation("SAet " + files.Count + " numer of files from file component");
+
+        filesToUploadDTO = files;
+    }
+
+    private async Task AddNewBikePart()
+    {
+        //This is for testing
+        _logger.LogInformation("In AddnewBikePart in AddBikePart.razor");
+        foreach (var file in filesToUploadDTO)
+        {
+            _logger.LogInformation("Seriailzed file details " + JsonConvert.SerializeObject(file));
+        }
+
+         _logger.LogInformation("about to called BPSC.AddBikePart");
+
+        var result = await BPS.AddBikePart(request, filesToUploadDTO);
+        message = result.Message;
+
+        if (result.Success)
+        {
+            NM.NavigateTo(ReturnUrl);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await BSC.GetBikes();
+
+        request.bikeId = bikeId;
+        request.DatePurchased = DateTime.Now;
+    }
+
+
+
+}

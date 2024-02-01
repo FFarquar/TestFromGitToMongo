@@ -1,0 +1,97 @@
+﻿@page "/parts/{bikeId:int}"
+@inject IBikePartService BPSC
+@inject NavigationManager NM
+@inject IUploadDownloadService UDSC
+
+
+<h3>Parts</h3>
+
+<div class="btn-group" role="group" aria-label="Basic example">
+    <button type="button" @onclick="() => AddBikePart()" class="btn btn-secondary fa fa-cog"> Add part</button>
+</div>
+
+   @if(BikesPartsWithFA == null || BikesPartsWithFA.Count == 0)
+    {
+    <span>Loading Bike parts/No parts found</span>
+}
+else
+{
+   <table class="table table-striped table-bordered">
+       
+        <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Part name</th>
+                    <th scope="col" width="150px">Cost</th>
+                    <th scope="col"> Date purchased</th>
+                    <th scope="col">Purchased from</th>
+                    <th scope="col">Notes</th>
+                    <th scope="col">Attachments</th>
+                    <th scope="col">Edit/Delete</th>
+                </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var bikePart in BikesPartsWithFA)
+            {
+                <tr>
+                      <td>@bikePart.Name</td>
+                      <td>$@bikePart.Cost</td>
+                      <td>@bikePart.DatePurchased.ToString("dd MMM yyyy")</td>
+                      <td>@bikePart.PurchasedFrom</td>
+                      <td>@bikePart.Notes</td>
+
+                    <td><ListAttachments listOfFiles=@bikePart.Files></ListAttachments></td>
+                    <td><a href="/editdeletebikepart/@bikePart._id/@bikePart.bikeId?returnUrl=@NM.ToBaseRelativePath(NM.Uri)"><input type="button" value="Edit"></a></td>
+                </tr>
+            }
+        </tbody>
+
+
+   </table>
+}
+
+
+@code {
+    //I've modified this module so that the HTML reads a local variable that contains a list of bike parts and file attachments.
+
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    private static List<BikePartWithFileAttachmentsDTO> BikesPartsWithFA = new List<BikePartWithFileAttachmentsDTO>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await BPSC.GetBikeParts(bikeId);
+
+        BikesPartsWithFA.Clear();
+
+            foreach (var bp in BPSC.BikeParts)
+        {
+
+            BikePartWithFileAttachmentsDTO BPWFA = new BikePartWithFileAttachmentsDTO()
+            {
+                Id = bp.Id,
+                _id = bp._id,
+                bikeId = bp.bikeId,
+                Name = bp.Name,
+                Cost = bp.Cost,
+                DatePurchased = bp.DatePurchased,
+                PurchasedFrom = bp.PurchasedFrom,
+                Notes = bp.Notes,
+                Files  = bp.UploadResult
+            };
+
+            //Console.WriteLine("BP upload result = " + BNWFA.Files.Count);
+            BikesPartsWithFA.Add(BPWFA);
+        }
+
+    }
+
+        protected  async Task AddBikePart()
+        {
+            var returnURL = @NM.ToBaseRelativePath(NM.Uri);
+            NM.NavigateTo($"/addbikepart/{bikeId}?returnUrl={returnURL}");
+        }
+
+}

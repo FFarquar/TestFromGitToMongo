@@ -73,19 +73,6 @@ else
         BikesNotesWithFA.Clear();
         foreach (var bp in NS.BikeNotes)
         {
-            //TODO : have to deal with file attachmnets
-            //var responseFromUDSC = await UDSC.ReturnListOfFileAttachments(bp.Id, "BikeNote");
-
-
-            //if(responseFromUDSC.Data == null)
-            //{
-            //    //Create an empty list of files
-            //    responseFromUDSC.Data = new List<FileDetail>();
-            //}
-
-
-            //var responseFromUDSC = new ServiceResponse<List<FileDetail>>();
-            //responseFromUDSC.Data = new List<FileDetail>();
 
             BikeNoteWithFileAttachmentDTO BNWFA = new BikeNoteWithFileAttachmentDTO()
             {

@@ -145,31 +145,6 @@
             }
         }
 
-        //Only upload if there are new attachments to upload
-        //if(filesToUpload.Count > 0 )
-        //{
-        //    var resultUpload = await UDSC.UploadFiles(filesToUpload);
-        //    if (!resultUpload.Success)
-        //    {
-        //        //the files weren't uploaded
-
-        //    }
-        //    else
-        //    {
-        //        //Now update the table in the DB
-        //        UploadResultDTO uploadResultDTO = new UploadResultDTO();
-        //        uploadResultDTO.relatedEntityId = bikeNoteId;
-
-        //        uploadResultDTO.relatedEntityName = "BikeNote";
-
-        //        uploadResultDTO.UploadResults = resultUpload.Data;
-
-
-        //        var resultOfTableUpdate = await UDSC.UpdateDBWIthFileAttachmentDetails(uploadResultDTO);
-        //    }
-        //}
-
-
 
         var result = await BNS.UpdateBikeNote(request, filesToUpload);
         message = result.Message;

@@ -97,7 +97,7 @@ namespace TestFromGitToMongo.Services.TripService
         {
             var result = await _apiClient.Trip_Update(trip);
 
-            if(result != null && result.Id != 0)
+            if(result != null && result._id != "0")
                 return new ServiceResponse<int> { Message = "Updated"};
             else
             {

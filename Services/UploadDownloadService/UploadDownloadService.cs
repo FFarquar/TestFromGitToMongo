@@ -66,7 +66,7 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
                     responseNote = await _bikeAPIClient.Note_Update(bikenotetoUpdate);
 
                     //put together the response to the caller
-                    if(responseNote.Success)
+                    if (responseNote.Success)
                     {
                         //Update worked
                         return new ServiceResponse<bool>();
@@ -83,15 +83,52 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
 
                     break;
 
+                case "bikepart":
+                    //cast the generic object to a BikePart
+                    BikePart bikeparttoUpdate = (BikePart)relatedObject;
+
+                    foreach (var file in filesToDelete)
+                    {
+
+                        for (int i = bikeparttoUpdate.UploadResult.Count - 1; i >= 0; i--)
+                        {
+                            if (bikeparttoUpdate.UploadResult[i].ServerPath == file.ServerPath && bikeparttoUpdate.UploadResult[i].FileName == file.OriginalFileName)
+                            {
+                                //this file has to be removed
+                                bikeparttoUpdate.UploadResult.RemoveAt(i);
+                                //break;
+                            }
+
+                        }
+                    }
+
+                    ServiceResponse<BikePart> responseBp = new ServiceResponse<BikePart>();
+                    responseBp = await _bikeAPIClient.BikePart_Update(bikeparttoUpdate);
+
+                    //put together the response to the caller
+                    if (responseBp.Success)
+                    {
+                        //Update worked
+                        return new ServiceResponse<bool>();
+                    }
+                    else
+                    {
+                        //Update failed
+                        return new ServiceResponse<bool>()
+                        {
+                            Success = false,
+                            Message = responseBp.Message
+                        };
+                    }
+
+                    break;
                 default:
                     //Have to implement all other object types
                     throw new NotImplementedException();
 
             }
-          
 
 
-                    
             //TODO: Have to delete the file attachment from the note entry in Mongo. Need to know what the parent object is (could be note or bike or trip etc). Some refactoring
             //required here. Perhaps the correct place for this action is in the service dealing with the object (such as the note)
             //var response = await _http.PutAsJsonAsync("api/Filesave/deleteFilesFromFileDetailsTable", filesToDelete);

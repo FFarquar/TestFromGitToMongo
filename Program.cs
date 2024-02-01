@@ -8,6 +8,7 @@ global using TestFromGitToMongo.Models;
 global using TestFromGitToMongo.Data;
 global using TestFromGitToMongo.Services.ChainService;
 global using TestFromGitToMongo.Services.NoteService;
+global using TestFromGitToMongo.Services.BikePartService;
 global using TestFromGitToMongo.Services.UploadDownloadService;
 
 using Microsoft.AspNetCore.Components.Web;
@@ -36,6 +37,8 @@ builder.Services.AddScoped<IBrowserStorageService, BrowserStorageService>();
 builder.Services.AddScoped<ITripServiceClient, TripServiceClient>();
 builder.Services.AddScoped<IChainServiceClient, ChainServiceClient>();
 builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<IBikePartService, BikePartService>();
+
 builder.Services.AddScoped<IUploadDownloadService, UploadDownloadService>();
 
 builder.Services.AddSingleton<GlobalVariables>();
