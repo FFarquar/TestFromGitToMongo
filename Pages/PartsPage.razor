@@ -91,7 +91,7 @@ else
         protected  async Task AddBikePart()
         {
             var returnURL = @NM.ToBaseRelativePath(NM.Uri);
-            NM.NavigateTo($"/addbikepart/{bikeId}?returnUrl={returnURL}");
+            NM.NavigateTo($"addbikepart/{bikeId}?returnUrl={returnURL}");
         }
 
 }
