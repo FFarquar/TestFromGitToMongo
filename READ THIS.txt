@@ -20,5 +20,3 @@ to be refactored so that it can be used. At the moment HttpClientCrudService is 
 
 Have the source code for web tutorial in HttpTesting.sln
 
-Up to "Inspecting Status Codes from Responses" on  https://code-maze.com/canceling-http-requests-in-asp-net-core-with-cancellationtoken/ 
-
