@@ -1,0 +1,110 @@
+﻿
+@page "/AddChain/{bikeId:int}"
+
+@inject IChainServiceClient CSC
+@inject IBikeServiceClient BSC
+@inject NavigationManager NavigationManager
+
+<h3>Add Chain</h3>
+
+<EditForm Model="request" OnValidSubmit="AddNewChain">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="mb-3">
+        <label for="bikeId">Bike</label>
+        <InputSelect id="bikeId" @bind-Value="request.BikeId" class="form-control">
+                @foreach(var bike in BSC.Bikes)
+                {
+                    <option value="@bike.Id"> @bike.Year  @bike.Model</option>
+                }
+        </InputSelect> 
+
+        <ValidationMessage For="@(() => request.BikeId)" />
+    </div>
+
+   <div class="mb-3">
+        <label for="brand">Brand of Chain</label>
+        <InputText id="brand" @bind-Value="request.Brand" class="form-control"/>
+        <ValidationMessage For="@(() => request.Brand)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="model">Chain Model</label>
+        <InputText id="model" @bind-Value="request.Model" class="form-control"/>
+        <ValidationMessage For="@(() => request.Model)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="date">Date purchased</label>
+        <InputDate id="date" @bind-Value="request.DatePurchased" class="form-control"/>
+        <ValidationMessage For="@(() => request.DatePurchased)" />
+
+    </div>
+
+    <div class="mb-3">
+        <label for="cost">Cost $</label>
+        <InputNumber id="cost" @bind-Value="request.Cost" class="form-control"/>
+        <ValidationMessage For="@(() => request.Cost)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="chainletter">Chain Letter</label>
+        <InputText id="chainletter" @bind-Value="request.ChainLetter" class="form-control"/>
+        <ValidationMessage For="@(() => request.ChainLetter)" />
+    </div>
+
+     <div class="mb-3">
+        <label for="imageURL">Image URL</label>
+        <InputText id="imageURL" @bind-Value="request.ImageURL" class="form-control"/>
+        <ValidationMessage For="@(() => request.ImageURL)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="purchasedFrom">Purchased from</label>
+        <InputText id="purchasedFrom" @bind-Value="request.PurchasedFrom" class="form-control"/>
+        <ValidationMessage For="@(() => request.PurchasedFrom)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="currentRotation">Current Rotation</label>
+        <InputNumber id="currentRotation" @bind-Value="request.CurrentRotation" class="form-control"/>
+        <ValidationMessage For="@(() => request.CurrentRotation)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Apply</button>
+
+    @message
+</EditForm>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; } = string.Empty;
+    
+    [Parameter]
+    public int bikeId { get; set; } = 0;
+
+    Chain request = new Chain();
+
+    string message = string.Empty;
+
+    protected override async void OnInitialized()
+    {
+        base.OnInitialized();
+        request.DatePurchased = DateTime.Now;
+        request.CurrentRotation = 1;
+
+        await BSC.GetBikes();
+    }
+    private async Task AddNewChain()
+    {
+        var result = await CSC.AddChain(request);
+        message = result.Message;
+
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo(ReturnUrl);
+        }
+
+    }
+}

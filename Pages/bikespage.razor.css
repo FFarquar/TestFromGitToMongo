@@ -1,0 +1,15 @@
+﻿
+.BikesContainer {
+    display:flex;
+    border:2px solid black;
+}
+.bike {
+    border: 1px solid red;
+}
+
+@media only screen and (width < 480px) {
+    .BikesContainer {
+        flex-direction: column;
+        border: 6px solid purple;
+    }
+}

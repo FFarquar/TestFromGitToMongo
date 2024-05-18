@@ -118,8 +118,16 @@ namespace TestFromGitToMongo.Clients
                     // Handle success
                     var stream = await response.Content.ReadAsStreamAsync();
 
-                    var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
-                    return Trip;
+                    if(stream.Length == 0)
+                    {
+                        return new TripDTO();
+                    }
+                    else
+                    {
+                            var Trip = await JsonSerializer.DeserializeAsync<TripDTO>(stream, _options);
+                            return Trip;
+
+                        }
                 }
                 else
                 {
@@ -427,8 +435,19 @@ namespace TestFromGitToMongo.Clients
                 response.EnsureSuccessStatusCode();
                 var stream = await response.Content.ReadAsStreamAsync();
 
-                var Chain = await JsonSerializer.DeserializeAsync<ChainSummaryDTO>(stream, _options);
-                return Chain;
+                try
+                {
+                    var Chain = await JsonSerializer.DeserializeAsync<ChainSummaryDTO>(stream, _options);
+                    return Chain;
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message + " ERROR occured in deserialize ChainSummaryDTO in GetChain method. Possibly a chain with no trips registered yet");
+                    return new ChainSummaryDTO();
+
+                    throw;
+                }
 
             }
         }
@@ -444,6 +463,71 @@ namespace TestFromGitToMongo.Clients
                 return Chains;
 
             }
+        }
+
+        public async Task<ServiceResponse<int>> AddChain(Chain chain)
+        {
+
+            //Cant add the chain if the chainletter exist already
+            if (await ChainExists(chain))
+            {
+                return new ServiceResponse<int>
+                {
+                    Success = false,
+                    Message = "Chain already exists"
+                };
+            }
+
+            var jsonString = JsonSerializer.Serialize(chain);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "chains/addchain");
+            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            request.Headers.Authorization = await Auth_AddTokenToRequest();
+
+            using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    return new ServiceResponse<int> { Data = chain.Id, Message = "Chain added." };
+                }
+                else
+                {
+                    // Handle failure. 
+                    return new ServiceResponse<int> { Data = 0, Success = false, Message = "Chain NOT added." };
+                }
+            }
+
+        }
+
+        //method to determine if chain letter exists.
+        private async Task<bool> ChainExists(Chain chain)
+        {
+            List<ChainSummaryDTO> chainList = await GetChains(chain.BikeId);
+
+            if (chainList != null && chainList.Count != 0)
+            {
+                foreach (var chainO in chainList)
+                {
+                    if (chainO.ChainLetter == chain.ChainLetter)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+
+            //if (await _context.Chains.AnyAsync(chain => chain.ChainLetter.ToLower()
+            //    .Equals(chainLetter.ToLower())))
+            //{
+            //    return true;
+            //}
+            //return false;
         }
         #endregion
 

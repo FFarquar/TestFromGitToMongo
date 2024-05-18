@@ -6,7 +6,6 @@
 @*@inject IHttpClientServiceImplementation HttpCS*@
 @inject NavigationManager NM
 @inject IConfiguration config
-
 <h3>Bikes</h3>
 
 <h4>Test version 2</h4>
@@ -16,14 +15,16 @@
     <span>Loading Bikes/No bikes found/Log in to view bikes</span>
 
 }
-
+<div class="BikesContainer">
 @foreach (var bike in BSC.Bikes)
 {
 
-    <div class="group" @onclick="() => BikeClicked(bike)">
+    @*<div class="group" @onclick="() => BikeClicked(bike)">*@
+    <div class="bike" @onclick="() => BikeClicked(bike)">
 
 
         <div class="media-body" >
+
             <a href="#">
                 <h4 class="mb-0">@bike.Brand</h4>
             </a>
@@ -43,6 +44,9 @@
         </div>
     </div>
 }
+
+</div>
+
 
 
 @code {

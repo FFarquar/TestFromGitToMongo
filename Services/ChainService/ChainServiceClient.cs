@@ -17,7 +17,8 @@ namespace TestFromGitToMongo.Services.ChainService
 
         public async Task<ServiceResponse<int>> AddChain(Chain request)
         {
-            throw new NotImplementedException();
+            return await _bikesClient.AddChain(request);
+
             //var result = await _http.PostAsJsonAsync("api/Chain/addChain", request);
 
             //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
