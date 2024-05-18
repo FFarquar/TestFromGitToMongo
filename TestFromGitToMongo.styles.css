@@ -1,3 +1,19 @@
+/* /Pages/bikespage.razor.rz.scp.css */
+
+.BikesContainer[b-kfq01nuhuo] {
+    display:flex;
+    border:2px solid black;
+}
+.bike[b-kfq01nuhuo] {
+    border: 1px solid red;
+}
+
+@media only screen and (width < 480px) {
+    .BikesContainer[b-kfq01nuhuo] {
+        flex-direction: column;
+        border: 6px solid purple;
+    }
+}
 /* /Pages/ChainList.razor.rz.scp.css */
 /*.group
 {
