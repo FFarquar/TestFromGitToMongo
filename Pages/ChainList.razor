@@ -3,7 +3,7 @@
 @inject IChainServiceClient CSC
 @inject NavigationManager NM
 
-<h3>Chains</h3>
+<h3>Chains for the selected bike</h3>
 
 <div class="btn-group" role="group" aria-label="Basic example">
     <button type="button" @onclick="() => AddChain()" class="btn btn-secondary fa fa-link"> Add Chain</button>
@@ -75,6 +75,7 @@
     protected  async Task AddChain()
     {
         var returnURL = @NM.ToBaseRelativePath(NM.Uri);
-        NM.NavigateTo($"/AddChain/{BikeId}?returnUrl={returnURL}");
+        NM.NavigateTo($"AddChain/{BikeId}?returnUrl={returnURL}");
+        
     }
 }
