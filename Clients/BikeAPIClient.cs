@@ -480,7 +480,7 @@ namespace TestFromGitToMongo.Clients
 
             var jsonString = JsonSerializer.Serialize(chain);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "chains/addchain");
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "chains/AddChain");
             request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             request.Headers.Authorization = await Auth_AddTokenToRequest();
 
