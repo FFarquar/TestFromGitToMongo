@@ -15,7 +15,7 @@
         <InputSelect id="bikeId" @bind-Value="request.BikeId" class="form-control">
                 @foreach(var bike in BSC.Bikes)
                 {
-                    <option value="@bike.Id"> @bike.Year  @bike.Model</option>
+                    <option value="@bike.Id"> @bike.Year  @bike.Model @bike.Notes</option>
                 }
         </InputSelect> 
 
