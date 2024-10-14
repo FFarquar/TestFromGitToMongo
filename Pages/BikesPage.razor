@@ -36,13 +36,17 @@
             <h6>Year model = @bike.Year </h6>
             <h6>Warranty = @bike.WarrantyPeriodYears</h6>
             <h6>Notes = @bike.Notes</h6>
+            <h6>KM travelled = @bike.KMTravelled</h6>
         </div>
 
-        <div class="oi-media-pause my-3">
+        <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=50% />
+@*        <div class="oi-media-pause my-3">
+            <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />    
+            <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />
             <a>
                 <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />    
             </a>
-        </div>
+        </div>*@
     </div>
 }
 

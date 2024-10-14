@@ -31,5 +31,6 @@ namespace TestFromGitToMongo.Models
         [Required]
         public string PurchasedFrom { get; set; }
         public string Notes { get; set; }
+        public double KMTravelled { get; set; }
     }
 }

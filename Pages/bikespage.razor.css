@@ -5,6 +5,7 @@
 }
 .bike {
     border: 1px solid red;
+    /*width:33%;*/
 }
 
 @media only screen and (width < 480px) {
