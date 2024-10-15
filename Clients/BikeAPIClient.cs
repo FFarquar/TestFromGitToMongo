@@ -871,7 +871,7 @@ namespace TestFromGitToMongo.Clients
             {
                 //string[] path = file.ServerPath.Split("/");
                 string path = file.ServerPath.Replace("/", ",");
-                var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "images/delete/" + path + "/" + file.OriginalFileName);
+                var request = new HttpRequestMessage(HttpMethod.Delete, _client.BaseAddress + "files/delete/" + path + "/" + file.OriginalFileName);
                 request.Headers.Authorization = await Auth_AddTokenToRequest();
 
                 using (var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))

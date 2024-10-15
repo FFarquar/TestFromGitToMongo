@@ -478,7 +478,7 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             //content.Add(content: directorylower, name: "directorylower");
             StringContent folders = new StringContent(folderNames);
             content.Add(content: folders, name: "folders");
-            for (int i = e.Count - 1; i < e.Count; i++)
+            for (int i = 0; i < e.Count; i++)
             {
                 _logger.LogInformation("{FileCount} filecount: this filenumber {filenum}", e.Count, i);
                 try
