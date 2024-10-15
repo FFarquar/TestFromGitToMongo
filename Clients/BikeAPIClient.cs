@@ -832,7 +832,7 @@ namespace TestFromGitToMongo.Clients
         {
             //var jsonString = JsonSerializer.Serialize(trip);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "images/upload");
+            var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress + "files/upload");
             //request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             request.Content = content;
             request.Headers.Authorization = await Auth_AddTokenToRequest();

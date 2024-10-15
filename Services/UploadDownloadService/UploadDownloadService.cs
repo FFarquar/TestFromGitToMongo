@@ -478,16 +478,17 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             //content.Add(content: directorylower, name: "directorylower");
             StringContent folders = new StringContent(folderNames);
             content.Add(content: folders, name: "folders");
-            foreach (var file in e)
+            for (int i = e.Count - 1; i < e.Count; i++)
             {
+                _logger.LogInformation("{FileCount} filecount: this filenumber {filenum}", e.Count, i);
                 try
                 {
-                    files.Add(new() { Name = file.FileName });
-                    var fileData = file.FileContent;
+                    files.Add(new() { Name = e[i].FileName });
+                    var fileData = e[i].FileContent;
                     ByteArrayContent byteContent = new ByteArrayContent(fileData);
-                    byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+                    byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse(e[i].ContentType);
 
-                    content.Add(content: byteContent, name: "\"file\"", fileName: file.FileName);
+                    content.Add(content: byteContent, name: "\"file\"", fileName: e[i].FileName);
                     upload = true;
 
                     _logger.LogInformation("\"file\"");
@@ -495,18 +496,18 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogInformation("{FileName} not uploaded (Err: 6): {Message}", file.FileName, ex.Message);
+                    _logger.LogInformation("{FileName} not uploaded (Err: 6): {Message}", e[i].FileName, ex.Message);
 
                     uploadResults.Add(
                         new()
                         {
-                            FileName = file.FileName,
+                            FileName = e[i].FileName,
                             ErrorCode = 6,
                             Uploaded = false
                         });
                 }
-
             }
+
 
             _logger.LogInformation("upload variable = " + upload);
 
@@ -544,45 +545,6 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
                 }
             }
 
-            //    HttpResponseMessage response = new HttpResponseMessage();
-            //    bool proceedAfterPost = false;
-            //    try
-            //    {
-            //        //response = await _http.PostAsync("api/Filesave", content);
-            //        response = await _bikeAPIClient.Attachment_Add(content);
-
-            //        proceedAfterPost = true;
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        _logger.LogInformation("...exception thrown = " + ex.Message);
-            //    }
-
-            //    //var response = await _http.PostAsync("api/Filesave", content);
-            //    if (response.IsSuccessStatusCode == false | proceedAfterPost == false)
-            //    {
-            //        _logger.LogInformation("{FileName} could not reach FileSave endpoint (Err: 7)");
-            //    }
-            //    else
-            //    {
-            //        _logger.LogInformation("Got a response from FileSaveController");
-            //        var newUploadResults = await response.Content.ReadFromJsonAsync<ServiceResponse<List<UploadResult>>>();
-
-            //        if (newUploadResults is not null)
-            //        {
-            //            return newUploadResults;
-            //        }
-            //        else
-            //        {
-            //            return new ServiceResponse<List<UploadResult>>
-            //            {
-            //                Success = false,
-            //                Message = "Null response from service on server"
-            //            };
-            //        }
-            //    }
-            //}
-
             return new ServiceResponse<List<UploadResult>>
             {
                 Success = false,
@@ -590,17 +552,6 @@ namespace TestFromGitToMongo.Services.UploadDownloadService
             };
         }
 
-        //private async Task<byte[]> GetImageBytes(IBrowserFile file)
-        //{
-        //    var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        //    await using var fileStream = new FileStream(path, FileMode.Create);
-        //    await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
-        //    var bytes = new byte[file.Size];
-        //    fileStream.Position = 0;
-        //    await fileStream.ReadAsync(bytes);
-        //    fileStream.Close();
-        //    return bytes;
-        //}
     }
 
     public class File
