@@ -901,7 +901,7 @@ namespace TestFromGitToMongo.Clients
 
             _client.DefaultRequestHeaders.Authorization = await Auth_AddTokenToRequest();
             //var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "images/getafile/" + path[0] + "/" + path[1] + "/" + fileName);
-            var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "images/getafile/" + path + "/" + fileName);
+            var imageStreamRes = await _client.GetAsync(_client.BaseAddress + "files/getafile/" + path + "/" + fileName);
             if (imageStreamRes is not null)
             {
                 return new ServiceResponse<DotNetStreamReference>
