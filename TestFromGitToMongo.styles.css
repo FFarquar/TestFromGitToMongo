@@ -24,6 +24,28 @@
     margin: 5px;
     cursor: pointer;
 }*/
+/* /Pages/Login.razor.rz.scp.css */
+.spinner[b-nlrl8jh0wx] {
+    border: 16px solid silver;
+    border-top: 16px solid #337AB7;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin-b-nlrl8jh0wx 700ms linear infinite;
+    top: 40%;
+    left: 55%;
+    position: absolute;
+}
+
+@keyframes spin-b-nlrl8jh0wx {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}
 /* /Pages/Trips.razor.rz.scp.css */
 .dataTables_length[b-yeiwo11kmh],
 .dataTables_wrapper[b-yeiwo11kmh] {
