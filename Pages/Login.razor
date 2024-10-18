@@ -21,6 +21,7 @@
     <div class=@messagecssClass>
         <span>@message</span>
     </div>
+
 </EditForm>
 
 @code {
@@ -33,11 +34,13 @@
     string message = string.Empty;
     string messagecssClass = string.Empty;
 
+    
     async Task HandleLogin()
     {
 
-         messagecssClass = "text-warning display-5";
-         message = "Initial login can take up to 1 minute. Please be patient";        
+
+        messagecssClass = "text-warning display-5";
+        message = "Initial login can take up to 2 minutes while server spins up. Please be patient";        
 
         var result = await AuthService.Login(user);
         //var result = await AuthService.TestCall(user);
@@ -49,7 +52,11 @@
             NM.NavigateTo(returnUrl);
         }
         else
-            messagecssClass = "text-danger";
+        {
+            messagecssClass = "text-danger";    
+        }
+
+        message = result.Message;
     }
 
     protected override void OnInitialized()

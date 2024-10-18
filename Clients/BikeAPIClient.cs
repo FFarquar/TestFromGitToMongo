@@ -39,12 +39,18 @@ namespace TestFromGitToMongo.Clients
 
             //Console.WriteLine(_config.GetValue<string>("API_Details:API_LOCATION"));
             _client = client;
-            _client.Timeout = TimeSpan.FromMinutes(1);
+            //_client.Timeout = TimeSpan.FromMinutes(2);
+
+
+            //_client.Timeout = TimeSpan.FromSeconds(Convert.ToDouble(_config["API_Response_Time"])); //testing this
             _browserStorageService = browserStorageService;
             this._config = _config;
             _globalVariables = globalVariables;
             _client.BaseAddress = new Uri(_config["API_BaseUrl"]);
-            _client.Timeout = new TimeSpan(0, 0, 30);
+            //_client.Timeout = new TimeSpan(0, 0, 30);
+            int timeOutPeriod = Convert.ToInt16(_config["API_Response_Time"]);
+            _client.Timeout = new TimeSpan(0, 0, timeOutPeriod);
+            
             _client.DefaultRequestHeaders.Clear();
             //_options = new JsonSerializerOptions
             //{
@@ -594,27 +600,42 @@ namespace TestFromGitToMongo.Clients
             retVal.Success = false;
             //_client.Timeout = TimeSpan.FromMinutes(1);
 
-            using (var response = await _client.SendAsync(httpRequestMessage))
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
+                using (var response = await _client.SendAsync(httpRequestMessage))
                 {
-                    RegLogDTO registerResponseDTO = JsonSerializer.Deserialize<RegLogDTO>(data)!;
+                    var data = await response.Content.ReadAsStringAsync();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        RegLogDTO registerResponseDTO = JsonSerializer.Deserialize<RegLogDTO>(data)!;
 
-                    _globalVariables.JWTToken = registerResponseDTO.token;
-                    //_browserStorageService.AddItemToStorage("jwttoken", registerResponseDTO.token);
+                        _globalVariables.JWTToken = registerResponseDTO.token;
+                        //_browserStorageService.AddItemToStorage("jwttoken", registerResponseDTO.token);
 
-                    // Handle success
-                    retVal.Success = true;
-                    retVal.Message = registerResponseDTO.message;
+                        // Handle success
+                        retVal.Success = true;
+                        retVal.Message = registerResponseDTO.message;
+                    }
+                    else
+                    {
+                        // Handle failure
+                        RegLogDTO registerResponseDTO = JsonSerializer.Deserialize<RegLogDTO>(data)!;
+                        var responseBytes = await response.Content.ReadAsByteArrayAsync();
+                        retVal.Message = registerResponseDTO.message;
+                    }
                 }
-                else
-                {
-                    // Handle failure
-                    RegLogDTO registerResponseDTO = JsonSerializer.Deserialize<RegLogDTO>(data)!;
-                    var responseBytes = await response.Content.ReadAsByteArrayAsync();
-                    retVal.Message = registerResponseDTO.message;
-                }
+
+//                return retVal;
+            }
+            catch (TaskCanceledException e)
+            {
+                //something happened, probably a timeout 
+                retVal.Message = "Request timed out. Try to log in again (server may still be asleep)";
+            }
+            
+            catch (Exception ex)
+            {
+                retVal.Message = "Error logging in " + ex.Message;
             }
 
             return retVal;
