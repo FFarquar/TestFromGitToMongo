@@ -8,11 +8,10 @@
 @inject IConfiguration config
 <h3>Bikes</h3>
 
-<h4>Test version 2</h4>
-
     @if(BSC.Bikes == null || BSC.Bikes.Count == 0)
 {
-    <span>Loading Bikes/No bikes found/Log in to view bikes</span>
+    @*<span>Loading Bikes/No bikes found/Log in to view bikes</span>*@
+    <span>@message</span>   
 
 }
 <div class="BikesContainer">
@@ -40,13 +39,7 @@
         </div>
 
         <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=50% />
-@*        <div class="oi-media-pause my-3">
-            <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />    
-            <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />
-            <a>
-                <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=20% />    
-            </a>
-        </div>*@
+
     </div>
 }
 
@@ -55,14 +48,18 @@
 
 
 @code {
+    string message = string.Empty;
     private static List<Bike> Bikes = new List<Bike>();
 
     protected override async Task OnInitializedAsync()
     {
+        message = "Log in to view bikes";
         await BSC.GetBikes();
-        //await HttpCS.GetBikes();
-        //await HttpCS.GetBikesWithStream();
-        //await HttpCS.Execute();         //Example directly using typed client
+
+        //if (BSC.Bikes.Count == 0)
+        //{
+        //    message = "No bikes found";
+        //}
 
     }
 

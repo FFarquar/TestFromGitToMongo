@@ -39,6 +39,7 @@ namespace TestFromGitToMongo.Clients
 
             //Console.WriteLine(_config.GetValue<string>("API_Details:API_LOCATION"));
             _client = client;
+            _client.Timeout = TimeSpan.FromMinutes(1);
             _browserStorageService = browserStorageService;
             this._config = _config;
             _globalVariables = globalVariables;
@@ -591,6 +592,7 @@ namespace TestFromGitToMongo.Clients
 
             ServiceResponse<string> retVal = new ServiceResponse<string>();
             retVal.Success = false;
+            //_client.Timeout = TimeSpan.FromMinutes(1);
 
             using (var response = await _client.SendAsync(httpRequestMessage))
             {

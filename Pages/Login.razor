@@ -35,6 +35,10 @@
 
     async Task HandleLogin()
     {
+
+         messagecssClass = "text-warning display-5";
+         message = "Initial login can take up to 1 minute. Please be patient";        
+
         var result = await AuthService.Login(user);
         //var result = await AuthService.TestCall(user);
 
@@ -48,4 +52,10 @@
             messagecssClass = "text-danger";
     }
 
+    protected override void OnInitialized()
+    {
+        messagecssClass = "text-warning display-5";
+        message = "Initial login can take up to 1 minute. Please be patient";
+
+    }
 }
