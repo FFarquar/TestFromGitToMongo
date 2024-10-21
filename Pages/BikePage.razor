@@ -22,12 +22,17 @@
             <h6>KM travelled = @BSC.Bike.KMTravelled</h6>
         </div>
 
-        <div class="oi-media-pause my-3">
-            <a>
+        <div>
+            <img src="@BSC.Bike.ImageURL" alt="@BSC.Bike.Model" width=20% />    
+        </div>
+        
+@*        <div class="oi-media-pause my-3">
+
+           <a>
                 <img class="media-img img-fluid" src="@BSC.Bike.ImageURL" alt="@BSC.Bike.Model" width=20% />    
             </a>
-        </div>
-
+       </div>
+*@
         <div class="btn-group" role="group" aria-label="Basic example">
             <button type="button" @onclick="() => Trips()" class="btn btn-secondary fa fa-bicycle"> Trips</button>
             <button type="button" @onclick="()=> Chains()" class="btn btn-secondary fa fa-link" > Chains</button>

@@ -1,16 +1,35 @@
 ﻿
 .BikesContainer {
-    display:flex;
-    border:2px solid black;
+    /*    display:flex;
+    border:1px solid black;
+*/
+    width: 100vw;
+    height: 100vh;
+    /* Aligns the children items in a row direction */
+    display: flex;
+    margin-left: -5px;
 }
 .bike {
-    border: 1px solid red;
-    /*width:33%;*/
+    border: 1px solid blue;
+
+    width: 33%;
+}
+
+.bikeImg {
+    display:inline-block;
+    width:50%;
 }
 
 @media only screen and (width < 480px) {
     .BikesContainer {
         flex-direction: column;
-        border: 6px solid purple;
+        /*border: none;
+        width:50%;*/
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .bike{
+        width: 100%
     }
 }

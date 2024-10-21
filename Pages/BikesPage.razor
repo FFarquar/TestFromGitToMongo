@@ -6,6 +6,11 @@
 @*@inject IHttpClientServiceImplementation HttpCS*@
 @inject NavigationManager NM
 @inject IConfiguration config
+
+<head>
+    <link href="TestFromGitToMongo/BikesPage.razor.css" rel="stylesheet" />
+</head>
+
 <h3>Bikes</h3>
 
     @if(BSC.Bikes == null || BSC.Bikes.Count == 0)
@@ -22,7 +27,8 @@
     <div class="bike" @onclick="() => BikeClicked(bike)">
 
 
-        <div class="media-body" >
+        @*<div class="media-body" >*@
+        <div>
 
             <a href="#">
                 <h4 class="mb-0">@bike.Brand</h4>
@@ -38,8 +44,8 @@
             <h6>KM travelled = @bike.KMTravelled</h6>
         </div>
 
-        <img class="media-img img-fluid" src="@bike.ImageURL" alt="@bike.Model" width=50% />
-
+   @*     <img class="media-img img-fluid bikeImg" src="@bike.ImageURL" alt="@bike.Model" width=50%/>*@
+        <img class="media-img img-fluid bikeImg" src="@bike.ImageURL" alt="@bike.Model" />
     </div>
 }
 
