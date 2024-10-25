@@ -17,7 +17,7 @@
       "Microsoft.AspNetCore.Authentication.Core.dll": "sha256-NP2svkDxlIVJsMiWAmj552NCYo4j7YnOUr2+jkz5+pc=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-wujrYVLsAXEvenCzAuOabyH+5adCP9HvgdP54yD7mLc=",
       "Microsoft.AspNetCore.Authorization.Policy.dll": "sha256-4f7xvTVUxi0h0P0Hci5blPefIu8mspp\/qgcIrxhfvdU=",
-      "Microsoft.AspNetCore.Components.dll": "sha256-G\/\/au3QLqkVnP3VnFfOlwJOgnzD260L6xxhEBu56E8k=",
+      "Microsoft.AspNetCore.Components.dll": "sha256-431Bl1MhCJLC1FwLMLAO\/2qmvsHcfxld5ykY68pjuqk=",
       "Microsoft.AspNetCore.Components.Forms.dll": "sha256-bDlLpLms6qCvNrwyJ\/cWs7hwcySG4MPi3qZNkhxiZi0=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-lm4ZyxUwVDPGsSLVaHHbzCfShOQmHHpCmaChnXB52ME=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-AFQc2h3v+ZKBeNBZ84XEzd9owqRppmDbSS5lhEPHccM=",
@@ -151,7 +151,7 @@
       "System.Xml.ReaderWriter.dll": "sha256-oBlIorDaJQUh2Bd8AGoyeORMUr8dQcM\/V+p8tTvAFjw=",
       "System.Xml.XDocument.dll": "sha256-YWsNdtbfa3yRmemhwepxWCzanMItWuuWmRpQFFq6mPk=",
       "System.Xml.XmlSerializer.dll": "sha256-KN6LhZSfE4CSnJFUrdyVNVLa+Cet2ARi\/ktbcF1e32s=",
-      "TestFromGitToMongo.dll": "sha256-AnZlW3O2hxyEyYN+tFuKgBMToTnstgVjXoOp95mnkJk=",
+      "TestFromGitToMongo.dll": "sha256-C1N\/YX4AgslBL3VVGmWcVUPNfqH4imK1CWPHmssYctY=",
       "ZstdSharp.dll": "sha256-VKZX+de4WCoEsOirOWgSviiKvr0Z3Ujd2\/PpLOUPOaE="
     },
     "extensions": null,
