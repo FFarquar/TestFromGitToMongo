@@ -57,6 +57,6 @@ static void ConfigureServices(IServiceCollection services)
 
     services.AddScoped<IHttpClientServiceImplementation, HttpClientFactoryService>();
 
-
+    services.AddSingleton<AppData>();
 }
 

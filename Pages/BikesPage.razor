@@ -6,6 +6,7 @@
 @*@inject IHttpClientServiceImplementation HttpCS*@
 @inject NavigationManager NM
 @inject IConfiguration config
+@inject Services.AppData AppData
 
 <head>
     <link href="TestFromGitToMongo/BikesPage.razor.css" rel="stylesheet" />
@@ -14,39 +15,48 @@
 <h3>Bikes</h3>
 
     @if(BSC.Bikes == null || BSC.Bikes.Count == 0)
-{
-    @*<span>Loading Bikes/No bikes found/Log in to view bikes</span>*@
-    <span>@message</span>   
+    {
+    
+        <span>@message</span>   
 
-}
+    }else
+    {
+        <input class="form-check-input"  type="checkbox" id="chkShowOldBikes" @bind="AppData.ShowOldBikesInBikesPage"/>
+           @*<input class="form-check-input"  type="checkbox" id="chkShowOldBikes" @bind-value=@showOldBikes  />*@
+        <label for="chkShowOldBikes">Show bikes no longer owned </label>
+    }
+
 <div class="BikesContainer">
 @foreach (var bike in BSC.Bikes)
 {
+        @*@if(bike.StillOwned != showOldBikes)*@
+        @if(bike.StillOwned != AppData.ShowOldBikesInBikesPage)
+        {
+            <div class="bike" @onclick="() => BikeClicked(bike)">
 
-    @*<div class="group" @onclick="() => BikeClicked(bike)">*@
-    <div class="bike" @onclick="() => BikeClicked(bike)">
 
+                @*<div class="media-body" >*@
+                <div>
 
-        @*<div class="media-body" >*@
-        <div>
+                    <a href="#">
+                        <h4 class="mb-0">@bike.Brand</h4>
+                    </a>
+                    <p>Model @bike.Model</p>
+                    <p>Date purchased @bike.DatePurchased.ToString("dd/MM/yyyy")</p>
+                    <h5 class="price">
+                        $@bike.Cost
+                    </h5>
+                    <h6>Year model = @bike.Year </h6>
+                    <h6>Warranty = @bike.WarrantyPeriodYears</h6>
+                    <h6>Notes = @bike.Notes</h6>
+                    <h6>KM travelled = @bike.KMTravelled</h6>
+                </div>
 
-            <a href="#">
-                <h4 class="mb-0">@bike.Brand</h4>
-            </a>
-            <p>Model @bike.Model</p>
-            <p>Date purchased @bike.DatePurchased.ToString("dd/MM/yyyy")</p>
-            <h5 class="price">
-                $@bike.Cost
-            </h5>
-            <h6>Year model = @bike.Year </h6>
-            <h6>Warranty = @bike.WarrantyPeriodYears</h6>
-            <h6>Notes = @bike.Notes</h6>
-            <h6>KM travelled = @bike.KMTravelled</h6>
-        </div>
-
-   @*     <img class="media-img img-fluid bikeImg" src="@bike.ImageURL" alt="@bike.Model" width=50%/>*@
-        <img class="media-img img-fluid bikeImg" src="@bike.ImageURL" alt="@bike.Model" />
-    </div>
+           @*     <img class="media-img img-fluid bikeImg" src="@bike.ImageURL" alt="@bike.Model" width=50%/>*@
+                <img class="media-img img-fluid bikeImg" src="@bike.ImageURL" alt="@bike.Model" />
+            </div>
+            
+        }
 }
 
 </div>
@@ -57,6 +67,8 @@
     string message = string.Empty;
     private static List<Bike> Bikes = new List<Bike>();
 
+    //value to keep track if old bikes should be shown
+    //private bool showOldBikes;
     protected override async Task OnInitializedAsync()
     {
         message = "Log in to view bikes";
@@ -73,4 +85,6 @@
     {
         NM.NavigateTo($"bike/{bike.Id}");
     }
+
+
 }

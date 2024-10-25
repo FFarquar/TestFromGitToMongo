@@ -32,5 +32,8 @@ namespace TestFromGitToMongo.Models
         public string PurchasedFrom { get; set; }
         public string Notes { get; set; }
         public double KMTravelled { get; set; }
+
+        public Boolean StillOwned { get; set; }
+        public int ViewOrder { get; set; }
     }
 }
