@@ -20,3 +20,6 @@ to be refactored so that it can be used. At the moment HttpClientCrudService is 
 
 Have the source code for web tutorial in HttpTesting.sln
 
+
+
+______________ HAVE TO HAVE THE NODEAPIFORBikes Running to do dev on this application__________

@@ -7,12 +7,14 @@
 @inject NavigationManager NM
 @inject IConfiguration config
 @inject Services.AppData AppData
+@inject IConfiguration Configuration
 
 <head>
     <link href="TestFromGitToMongo/BikesPage.razor.css" rel="stylesheet" />
 </head>
 
-<h3>Bikes</h3>
+<h3>Bikes</h3> <p>Version: @Version</p>
+
 
     @if(BSC.Bikes == null || BSC.Bikes.Count == 0)
     {
@@ -86,5 +88,10 @@
         NM.NavigateTo($"bike/{bike.Id}");
     }
 
+  string Version;
+  protected override void OnInitialized()
+  {
+      Version = Configuration["AppVersion"] ?? "unknown";
+  }
 
 }
