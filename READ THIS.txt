@@ -23,3 +23,6 @@ Have the source code for web tutorial in HttpTesting.sln
 
 
 ______________ HAVE TO HAVE THE NODEAPIFORBikes Running to do dev on this application__________
+
+
+_________Debugging (pressing F5) will not open the website. Need to manually go to it at https://localhost:7171 __________

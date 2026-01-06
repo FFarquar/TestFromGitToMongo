@@ -13,5 +13,8 @@ namespace TestFromGitToMongo.Services.TripService
         Task<ServiceResponse<int>> UpdateTrip(Trip trip);
         Task<ServiceResponse<bool>> DeleteTrip(string  tripId);
         Task GetChainRotationTrips(int chainId);
+        Task <ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId);
+        Task <ServiceResponse<string>>  GetChainRotationUsedInlastTrip(int bikeId);
+
     }
 }

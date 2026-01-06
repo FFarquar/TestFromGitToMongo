@@ -64,6 +64,8 @@ namespace TestFromGitToMongo.Services.TripService
             //    ChainRotationsTripsDTO = result.Data;
         }
 
+
+
         public async Task  GetTripAsync(string tripId)
         {
 
@@ -107,6 +109,35 @@ namespace TestFromGitToMongo.Services.TripService
             //var result = await _http.PutAsJsonAsync("api/trip/updateTrip", trip);
 
             //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+        }
+
+
+        public async Task<ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId)
+        {
+
+            await GetTripsForBike(bikeId);
+
+            if (Trips != null && Trips.Count != 0)
+            {
+                // Console.WriteLine(Trips[Trips.Count - 1].ChainLetter);
+                return new ServiceResponse<string> { Message = Trips[0].ChainLetter };
+            }
+
+            return new ServiceResponse<string> { Success = false, Message = "????" };
+        }
+
+        public async Task<ServiceResponse<string>> GetChainRotationUsedInlastTrip(int bikeId)
+        {
+            await GetTripsForBike(bikeId);
+
+            if (Trips != null && Trips.Count != 0)
+            {
+                // Console.WriteLine(Trips[Trips.Count - 1].ChainLetter);
+                return new ServiceResponse<string> { Message = Trips[0].ChainRotation.ToString() }; 
+            }
+
+
+            return new ServiceResponse<string> { Success = false, Message = "????" };
         }
     }
 }
