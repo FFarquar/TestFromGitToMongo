@@ -15,6 +15,7 @@ namespace TestFromGitToMongo.Services.TripService
         Task GetChainRotationTrips(int chainId);
         Task <ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId);
         Task <ServiceResponse<string>>  GetChainRotationUsedInlastTrip(int bikeId);
+        Task <ServiceResponse<string>>  GetChainLastTripDate(int bikeId);
 
     }
 }

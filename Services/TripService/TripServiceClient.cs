@@ -115,7 +115,11 @@ namespace TestFromGitToMongo.Services.TripService
         public async Task<ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId)
         {
 
-            await GetTripsForBike(bikeId);
+            if (Trips == null || Trips.Count != 0)
+            {
+                await GetTripsForBike(bikeId);    
+            }
+            
 
             if (Trips != null && Trips.Count != 0)
             {
@@ -128,7 +132,11 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task<ServiceResponse<string>> GetChainRotationUsedInlastTrip(int bikeId)
         {
-            await GetTripsForBike(bikeId);
+            if (Trips == null || Trips.Count != 0)
+            {
+                await GetTripsForBike(bikeId);    
+            }
+
 
             if (Trips != null && Trips.Count != 0)
             {
@@ -139,5 +147,22 @@ namespace TestFromGitToMongo.Services.TripService
 
             return new ServiceResponse<string> { Success = false, Message = "????" };
         }
+
+        public async Task<ServiceResponse<string>> GetChainLastTripDate(int bikeId)
+        {
+            if (Trips == null || Trips.Count != 0)
+            {
+                await GetTripsForBike(bikeId);    
+            }
+
+
+            if (Trips != null && Trips.Count != 0)
+            {
+
+                return new ServiceResponse<string> { Message = Trips[0].Date.ToString("d") }; 
+            }
+
+            return new ServiceResponse<string> { Success = false, Message = "????" };
+        }        
     }
 }

@@ -8,67 +8,94 @@
 <EditForm Model="request" OnValidSubmit="AddNewTrip">
     <DataAnnotationsValidator></DataAnnotationsValidator>
 
-    <div class="mb-3">
-        <label >Chain used in previous trip</label>
-        <span>@lastChainUsed</span>
+
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-header">
+                Previous trip details
+            </div>
+            <div class="card-body pt-2 pb-1"">
+                <div class="mb-1">
+                    <label class="form-label fw-bold">Chain used:</label>
+                    <span class="ms-2">@lastChainUsed</span>
+                </div>
+
+                <div class="mb-1">
+                    <label class="form-label fw-bold">Chain rotation used:</label>
+                    <span class="ms-2">@lastRotationUsed</span>
+                </div>
+
+                <div class="mb-1">
+                    <label class="form-label fw-bold">Trip date:</label>
+                    <span class="ms-2">@lastTripDate</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label >Chain rotation used in previous trip</label>
-        <span>@lastRotationUsed</span>
+    <p/>
+
+    <div class="card">
+        <div class="card-header">
+            This trip details
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-2">
+                <label for="chainId">Chain Letter</label>
+                <InputSelect id="chainId" @bind-Value="request.ChainId" class="form-control">
+                    <option value="">--Select Chain--</option>
+
+                        @foreach(var chain in CSC.Chains)
+                        {
+
+                        <option value="@chain.Id"> @chain.ChainLetter</option>
+
+
+                        }
+                </InputSelect> 
+
+                <ValidationMessage For="@(() => request.ChainId)" />
+            </div>
+
+            <div class="mb-2">
+                <label for="date">Date</label>
+                <InputDate id="date" @bind-Value="request.Date" class="form-control"/>
+                <ValidationMessage For="@(() => request.Date)" />
+
+            </div>
+
+            <div class="mb-2">
+                <label for="tripDistance">Trip Distance</label>
+                <InputNumber id="tripDistance" @bind-Value="request.TripDistance" class="form-control"/>
+                <ValidationMessage For="@(() => request.TripDistance)" />
+            </div>
+
+            <div class="mb-2">
+                <label for="chainRotation">Chain Rotation</label>
+                <InputNumber id="chainRotation" @bind-Value="request.ChainRotation" class="form-control"/>
+                <ValidationMessage For="@(() => request.ChainRotation)" />
+            </div>
+
+            <div class="mb-2">
+                <label for="tripDescription">Route/description</label>
+                <InputText id="tripDescription" @bind-Value="request.TripDescription" class="form-control"/>
+                <ValidationMessage For="@(() => request.TripDescription)" />
+            </div>
+
+            <div class="mb-2">
+                <label for="tripNotes">Trip notes</label>
+                <InputText id="tripNotes" @bind-Value="request.TripNotes" class="form-control"/>
+                <ValidationMessage For="@(() => request.TripNotes)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add trip</button>
+
+            @message
+        </div>        
     </div>
 
-    <div class="mb-3">
-        <label for="chainId">Chain Letter</label>
-        <InputSelect id="chainId" @bind-Value="request.ChainId" class="form-control">
-              <option value="">--Select Chain--</option>
-
-                @foreach(var chain in CSC.Chains)
-                {
-
-                <option value="@chain.Id"> @chain.ChainLetter</option>
-
-
-                }
-        </InputSelect> 
-
-        <ValidationMessage For="@(() => request.ChainId)" />
-    </div>
-
-    <div class="mb-3">
-        <label for="date">Date</label>
-        <InputDate id="date" @bind-Value="request.Date" class="form-control"/>
-        <ValidationMessage For="@(() => request.Date)" />
-
-    </div>
-
-    <div class="mb-3">
-        <label for="tripDistance">Trip Distance</label>
-        <InputNumber id="tripDistance" @bind-Value="request.TripDistance" class="form-control"/>
-        <ValidationMessage For="@(() => request.TripDistance)" />
-    </div>
-
-    <div class="mb-3">
-        <label for="chainRotation">Chain Rotation</label>
-        <InputNumber id="chainRotation" @bind-Value="request.ChainRotation" class="form-control"/>
-        <ValidationMessage For="@(() => request.ChainRotation)" />
-    </div>
-
-     <div class="mb-3">
-        <label for="tripDescription">Route/description</label>
-        <InputText id="tripDescription" @bind-Value="request.TripDescription" class="form-control"/>
-        <ValidationMessage For="@(() => request.TripDescription)" />
-    </div>
-
-     <div class="mb-3">
-        <label for="tripNotes">Trip notes</label>
-        <InputText id="tripNotes" @bind-Value="request.TripNotes" class="form-control"/>
-        <ValidationMessage For="@(() => request.TripNotes)" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add trip</button>
-
-    @message
 </EditForm>
 
 @code {
@@ -86,6 +113,7 @@
     string message = string.Empty;
     string lastChainUsed = string.Empty;
     string lastRotationUsed = string.Empty;
+    string lastTripDate = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -101,6 +129,10 @@
         var rotationResp = await TSC.GetChainRotationUsedInlastTrip(bikeId);
         if (rotationResp != null)
             lastRotationUsed = rotationResp.Message;
+
+        var rotationRlastTripDateesp = await TSC.GetChainLastTripDate(bikeId);
+        if (rotationRlastTripDateesp != null)
+            lastTripDate = rotationRlastTripDateesp.Message;
     }
 
     private async Task AddNewTrip()
