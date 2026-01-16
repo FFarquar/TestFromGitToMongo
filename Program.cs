@@ -40,6 +40,7 @@ builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddScoped<IBikePartService, BikePartService>();
 
 builder.Services.AddScoped<IUploadDownloadService, UploadDownloadService>();
+builder.Services.AddScoped<LoggingService>();
 
 builder.Services.AddSingleton<GlobalVariables>();
 

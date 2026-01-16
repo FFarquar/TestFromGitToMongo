@@ -115,6 +115,10 @@ namespace TestFromGitToMongo.Services.TripService
         public async Task<ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId)
         {
 
+            
+
+            Console.WriteLine("[Trips][Debug] GetChainUsedInlastTrip called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+            Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));
             if (Trips == null || Trips.Count != 0)
             {
                 await GetTripsForBike(bikeId);    
@@ -132,6 +136,9 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task<ServiceResponse<string>> GetChainRotationUsedInlastTrip(int bikeId)
         {
+            Console.WriteLine("[Trips][Debug] GetChainRotationUsedInlastTrip called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+            Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));
+
             if (Trips == null || Trips.Count != 0)
             {
                 await GetTripsForBike(bikeId);    
@@ -150,6 +157,9 @@ namespace TestFromGitToMongo.Services.TripService
 
         public async Task<ServiceResponse<string>> GetChainLastTripDate(int bikeId)
         {
+
+            Console.WriteLine("[Trips][Debug] GetChainLastTripDate called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+            Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));            
             if (Trips == null || Trips.Count != 0)
             {
                 await GetTripsForBike(bikeId);    
