@@ -106,73 +106,92 @@ namespace TestFromGitToMongo.Services.TripService
                 return new ServiceResponse<int> { Success = false, Message = "Not updated" };
             }
                 
-            //var result = await _http.PutAsJsonAsync("api/trip/updateTrip", trip);
+            // var result = await _http.PutAsJsonAsync("api/trip/updateTrip", trip);
 
-            //return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            // return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }
 
 
-        public async Task<ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId)
-        {
+        // public async Task<ServiceResponse<string>> GetChainUsedInlastTrip(int bikeId)
+        // {
 
             
 
-            Console.WriteLine("[Trips][Debug] GetChainUsedInlastTrip called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
-            Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));
-            if (Trips == null || Trips.Count != 0)
-            {
-                await GetTripsForBike(bikeId);    
-            }
+        //     Console.WriteLine("[Trips][Debug] GetChainUsedInlastTrip called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+        //     Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));
+        //     if (Trips == null || Trips.Count != 0)
+        //     {
+        //         await GetTripsForBike(bikeId);    
+        //     }
             
 
-            if (Trips != null && Trips.Count != 0)
-            {
-                // Console.WriteLine(Trips[Trips.Count - 1].ChainLetter);
-                return new ServiceResponse<string> { Message = Trips[0].ChainLetter };
-            }
+        //     if (Trips != null && Trips.Count != 0)
+        //     {
+        //         // Console.WriteLine(Trips[Trips.Count - 1].ChainLetter);
+        //         return new ServiceResponse<string> { Message = Trips[0].ChainLetter };
+        //     }
 
-            return new ServiceResponse<string> { Success = false, Message = "????" };
-        }
+        //     return new ServiceResponse<string> { Success = false, Message = "????" };
+        // }
 
-        public async Task<ServiceResponse<string>> GetChainRotationUsedInlastTrip(int bikeId)
+        // public async Task<ServiceResponse<string>> GetChainRotationUsedInlastTrip(int bikeId)
+        // {
+        //     Console.WriteLine("[Trips][Debug] GetChainRotationUsedInlastTrip called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+        //     Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));
+
+        //     if (Trips == null || Trips.Count != 0)
+        //     {
+        //         await GetTripsForBike(bikeId);    
+        //     }
+
+
+        //     if (Trips != null && Trips.Count != 0)
+        //     {
+        //         // Console.WriteLine(Trips[Trips.Count - 1].ChainLetter);
+        //         return new ServiceResponse<string> { Message = Trips[0].ChainRotation.ToString() }; 
+        //     }
+
+
+        //     return new ServiceResponse<string> { Success = false, Message = "????" };
+        // }
+
+        // public async Task<ServiceResponse<string>> GetChainLastTripDate(int bikeId)
+        // {
+
+        //     Console.WriteLine("[Trips][Debug] GetChainLastTripDate called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+        //     Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));            
+        //     if (Trips == null || Trips.Count != 0)
+        //     {
+        //         await GetTripsForBike(bikeId);    
+        //     }
+
+
+        //     if (Trips != null && Trips.Count != 0)
+        //     {
+
+        //         return new ServiceResponse<string> { Message = Trips[0].Date.ToString("d") }; 
+        //     }
+
+        //     return new ServiceResponse<string> { Success = false, Message = "????" };
+        // }
+
+        public async Task<ServiceResponse<LastTripDTO>> GetLastTripDetails(int bikeId)
         {
-            Console.WriteLine("[Trips][Debug] GetChainRotationUsedInlastTrip called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
-            Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));
-
+            // Console.WriteLine("[Trips][Debug] GetLastTripDetails called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
+            // Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));            
             if (Trips == null || Trips.Count != 0)
             {
                 await GetTripsForBike(bikeId);    
             }
 
-
             if (Trips != null && Trips.Count != 0)
             {
-                // Console.WriteLine(Trips[Trips.Count - 1].ChainLetter);
-                return new ServiceResponse<string> { Message = Trips[0].ChainRotation.ToString() }; 
+
+                return new ServiceResponse<LastTripDTO> { Data = new LastTripDTO { LastChainLetterUsed = Trips[0].ChainLetter, LastChainRotationUsed = Trips[0].ChainRotation.ToString(), LastTripDate = Trips[0].Date.ToString("d") } };
             }
 
+            return new ServiceResponse<LastTripDTO> { Success = false, Message = "????" };
 
-            return new ServiceResponse<string> { Success = false, Message = "????" };
         }
-
-        public async Task<ServiceResponse<string>> GetChainLastTripDate(int bikeId)
-        {
-
-            Console.WriteLine("[Trips][Debug] GetChainLastTripDate called Trips count = : " + (Trips == null ? "null" : Trips.Count.ToString()));
-            Console.WriteLine("[Trips][Debug] Time now is: " + DateTime.Now.ToString("T"));            
-            if (Trips == null || Trips.Count != 0)
-            {
-                await GetTripsForBike(bikeId);    
-            }
-
-
-            if (Trips != null && Trips.Count != 0)
-            {
-
-                return new ServiceResponse<string> { Message = Trips[0].Date.ToString("d") }; 
-            }
-
-            return new ServiceResponse<string> { Success = false, Message = "????" };
-        }        
     }
 }

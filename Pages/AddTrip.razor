@@ -123,7 +123,16 @@
 
         await CSC.GetChains(bikeId);
 
-        var chainResp = await TSC.GetChainUsedInlastTrip(bikeId);
+        ServiceResponse<LastTripDTO> lastTripDTO  =  await TSC.GetLastTripDetails(bikeId);
+
+        if (lastTripDTO != null && lastTripDTO.Success)
+        {
+            lastChainUsed = lastTripDTO.Data.LastChainLetterUsed;
+            lastRotationUsed = lastTripDTO.Data.LastChainRotationUsed;
+            lastTripDate = lastTripDTO.Data.LastTripDate;
+        }
+        
+        @* var chainResp = await TSC.GetChainUsedInlastTrip(bikeId);
         if (chainResp != null)
             lastChainUsed = chainResp.Message;
 
@@ -133,7 +142,7 @@
 
         var rotationRlastTripDateesp = await TSC.GetChainLastTripDate(bikeId);
         if (rotationRlastTripDateesp != null)
-            lastTripDate = rotationRlastTripDateesp.Message;
+            lastTripDate = rotationRlastTripDateesp.Message; *@
     }
 
     private async Task AddNewTrip()
